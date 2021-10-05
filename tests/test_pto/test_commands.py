@@ -10,6 +10,7 @@ def test_read_src_files():
     THEN a list of file names is returned
     """
     files =  cm.read_src_files("./tests/",[".img",".IMG"])
+    assert files is not None
 
 def test_create_date_path():
     """

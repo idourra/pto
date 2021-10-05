@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Python script that organize images using the exif date data in a file systemstructure YYYY/MM/DD
+Python package to organize images using the exif date data in a file system structure YYYY/MM/DD
+the three fists methods come from https://github.com/Zenith00/utils
 """
 
 from datetime import datetime
@@ -12,14 +13,6 @@ import shutil
 import sys
 import numpy
 from exif import Image
-
-# parser = argparse.ArgumentParser(
-#     description='Python script that organize images using the exif date data in a file systemstructure YYYY/MM/DD')
-
-# parser.add_argument('path', type=str, help='input the source folder path')
-# parser.add_argument('dest_path', type=str,
-#                     help='input the destination folder path. If not gived the subfolders will created under the source folder')
-# args = parser.parse_args()
 
 # Sadly, Python fails to provide the following magic number for us.
 ERROR_INVALID_NAME = 123
@@ -233,6 +226,10 @@ def read_src_files(src_path: str,extensions: list) -> list:
         return []
 
 def put_files_in_calendar(src_path: str,dest_path: str, files: list) -> bool:
+    #from a list of file names in a path, checks every image and using the exif metadata
+    #copy the file to the file system in a structure representing a calendar
+    #if the image file does not have a date, the image file is located in a none_exif_date folder
+    # for eg. /2021/10/1/ etc
     none_dated_files = []
     for file in files:
         src_file_path = os.path.join(src_path, file)
