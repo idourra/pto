@@ -196,7 +196,7 @@ def split_folder_to_subfolders(src_files: list,dest_path : str,number_of_files :
         for file in virtual_folder:
             try:
                 shutil.copy(file, new_path)
-                print(file + " copied to " + new_path)
+                print(f'{file} copied to {new_path}')
             except(Exception) as error:
                 print(error)
                 return False
@@ -207,7 +207,7 @@ def split_folder(dest_path: str, files: list, n: int) -> bool:
     files =  sorted(files)
     try:
         print(dest_path)
-        split_folder_to_subfolders(files,os.path.join(dest_path, "subfolder",n))
+        split_folder_to_subfolders(files,os.path.join(dest_path, "subfolder",str(n)))
     except(Exception) as error:
         print(error)
         return False
@@ -223,7 +223,6 @@ def read_src_files(src_path: str,extensions: list) -> list:
         return files
     except(Exception) as error:
         print(error)
-        return []
 
 def put_files_in_calendar(src_path: str,dest_path: str, files: list) -> bool:
     #from a list of file names in a path, checks every image and using the exif metadata

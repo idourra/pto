@@ -5,7 +5,7 @@ from pto import commands as cm
 
 def test_read_src_files():
     """
-    GIVEN read_src_files with valid properties src_path and list of extentions
+    GIVEN read_src_files with valid parameters src_path and list of extentions
     WHEN the execute method is called
     THEN a list of file names is returned
     """
