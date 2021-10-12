@@ -12,10 +12,11 @@ import pathlib
 import shutil
 import sys
 import numpy
-from exif import Image
+from exif import Image, DATETIME_STR_FORMAT
 
 # Sadly, Python fails to provide the following magic number for us.
 ERROR_INVALID_NAME = 123
+
 
 def is_pathname_valid(pathname: str) -> bool:
     '''
@@ -86,6 +87,7 @@ def is_pathname_valid(pathname: str) -> bool:
     #
     # Did we mention this should be shipped with Python already?
 
+
 def is_path_creatable(pathname: str) -> bool:
     '''
     'True' if the current user has sufficient permissions to create the passed
@@ -95,6 +97,7 @@ def is_path_creatable(pathname: str) -> bool:
     # working directory (CWD) instead.
     dirname = os.path.dirname(pathname) or os.getcwd()
     return os.access(dirname, os.W_OK)
+
 
 def is_path_exists_or_creatable(pathname: str) -> bool:
     '''
@@ -114,7 +117,22 @@ def is_path_exists_or_creatable(pathname: str) -> bool:
     except OSError:
         return False
 
-def extract_exif_date(filename)-> str:
+
+def extract_exif_data(filename) -> dict:
+    try:
+        with open(filename, "rb") as image_file:
+            image = Image(image_file)
+            if image.has_exif:
+                return image.get_all()
+            else:
+                print("does not contain any EXIF information.")
+                return None
+    except(Exception) as error:
+        print(error)
+        return None
+
+
+def extract_exif_date(filename) -> str:
     try:
         with open(filename, "rb") as image_file:
             image = Image(image_file)
@@ -123,6 +141,8 @@ def extract_exif_date(filename)-> str:
                     image_date_data = image.datetime_original[0:10]+" 00:00:00"
                 elif image.datetime_digitized:
                     image_date_data = image.datetime_digitized[0:10]+" 00:00:00"
+                elif image.datetime:
+                    image_date_data = image.datetime[0:10]+" 00:00:00"
                 else:
                     image_date_data = "0000:00:00 00:00:00"
                 if "-" in image_date_data:
@@ -141,6 +161,7 @@ def extract_exif_date(filename)-> str:
     except(Exception) as error:
         print(error)
         return None
+
 
 def create_date_path(dest_path: str, file_date: str) -> str:
 
@@ -166,17 +187,44 @@ def create_date_path(dest_path: str, file_date: str) -> str:
         print(error)
         return None
 
-def split_folder_to_subfolders(src_files: list,dest_path : str,number_of_files : int) -> bool:
-   
-    #calculate the number of folders to create in relation with the total of files
+def create_alphabet_folder(dest_path: str, iso_language: str) -> bool:
+    if iso_language == "es":
+        alphabet = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ'
+    elif iso_language == "es":
+        alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    else:
+        alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    
+    # create the base destination directory
+    if not os.path.exists(dest_path):
+        try:
+            os.mkdir(dest_path)
+        except(Exception) as error:
+            print(error)
+            return False
+    def create_hierarchy():
+        for letter in alphabet:
+            if not os.path.exists(os.path.join(dest_path, letter)):
+                try:
+                    os.mkdir(os.path.join(dest_path, letter))
+                except(Exception) as error:
+                    print(error)
+                    return False
+    return True
+
+def split_folder_to_subfolders(src_files: list, dest_path: str, number_of_files: int) -> bool:
+
+    src_files = sorted(src_files)
+    # calculate the number of folders to create in relation with the total of files
     if len(src_files) % number_of_files > 0:
         number_of_folders = int(len(src_files)/number_of_files) + 1
     else:
         number_of_folders = int(len(src_files)/number_of_files)
 
-    print(f"number of files:{number_of_files}, number of folders {number_of_folders}")
+    print(
+        f"number of files:{number_of_files}, number of folders {number_of_folders}")
 
-    #split the list of file names in the number of folders projected
+    # split the list of file names in the number of folders projected
     virtual_folders = numpy.array_split(src_files, number_of_folders)
 
     # create the folders in the file system and populate every folder with files gived the number_of_files per folder
@@ -202,32 +250,37 @@ def split_folder_to_subfolders(src_files: list,dest_path : str,number_of_files :
                 return False
     return True
 
+
 def split_folder(dest_path: str, files: list, n: int) -> bool:
-    #split a list of files into subfolders
-    files =  sorted(files)
+    # split a list of files into subfolders
+    files = sorted(files)
     try:
         print(dest_path)
-        split_folder_to_subfolders(files,os.path.join(dest_path, "subfolder",str(n)))
+        split_folder_to_subfolders(
+            files, os.path.join(dest_path, "subfolder", str(n)))
     except(Exception) as error:
         print(error)
         return False
     return True
 
-def read_src_files(src_path: str,extensions: list) -> list:
+
+def read_src_files(src_path: str, extensions: list) -> list:
     # returns a list with all files with the extension contained in the variable extensions
     try:
-        files = {p.resolve() for p in pathlib.Path(src_path).glob("**/*") if p.suffix in extensions}
-        #sort files by name
+        files = {p.resolve() for p in pathlib.Path(
+            src_path).glob("**/*") if p.suffix in extensions}
+        # sort files by name
         files = sorted(files)
         print(f'{str(len(files))} files in the {src_path}')
         return files
     except(Exception) as error:
         print(error)
 
-def put_files_in_calendar(src_path: str,dest_path: str, files: list) -> bool:
-    #from a list of file names in a path, checks every image and using the exif metadata
-    #copy the file to the file system in a structure representing a calendar
-    #if the image file does not have a date, the image file is located in a none_exif_date folder
+
+def put_files_in_calendar(src_path: str, dest_path: str, files: list) -> bool:
+    # from a list of file names in a path, checks every image and using the exif metadata
+    # copy the file to the file system in a structure representing a calendar
+    # if the image file does not have a date, the image file is located in a none_exif_date folder
     # for eg. /2021/10/1/ etc
     none_dated_files = []
     for file in files:
@@ -238,7 +291,7 @@ def put_files_in_calendar(src_path: str,dest_path: str, files: list) -> bool:
                 file_path = create_date_path(dest_path, image_date)
                 try:
                     shutil.copy2(src_file_path, file_path)
-                    print(os.path.join(file_path,file))
+                    print(os.path.join(file_path, file))
                 except(Exception) as error:
                     print(error)
             else:
@@ -252,14 +305,7 @@ def put_files_in_calendar(src_path: str,dest_path: str, files: list) -> bool:
                         print(error)
                 try:
                     shutil.copy2(src_file_path, file_path)
-                    print(os.path.join(file_path,file))
+                    print(os.path.join(file_path, file))
                 except(Exception) as error:
                     print(error)
     return True
-
-
-
-
-
-
-

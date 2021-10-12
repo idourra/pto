@@ -43,9 +43,21 @@ def test_split_folder_to_subfolders():
     WHEN the execute method is called
     THEN the content of the src_folder is splitted into subfolders containing the number_of_files gived
     """    
-    files = cm.read_src_files("/home/urra/tests/",[".jpg"])
-    assert cm.split_folder_to_subfolders(files,"/home/urra/tests/",1)
+    files = cm.read_src_files("/home/urra/tests/",[".jpg",[".JPG",".jpeg",".JPEG"]])
+    cm.split_folder_to_subfolders(files,"/media/urra/PELICULAS Y ENTRETENIMIENTO/",100)
 
 def test_split_folder():
     files = cm.read_src_files("/home/urra/tests/",[".jpg",".JPG",".jpeg",".JPEG"])
     cm.split_folder("/home/urra/tests/", files, 1)
+
+def test_create_alphabet_path(desth_path: str) -> bool:
+    """
+    GIVEN create_date_alphabet with a valid dest_path
+    WHEN the execute method is called
+    THEN a valid file system structure must be created in the destination folder year/month/day eg. 2000/1/23
+    """
+    cm.create_alphabet_folder("/home/urra/tests/")
+
+def test_create_alphabet()->bool:
+    assert cm.create_alphabet_folder("/home/urra/tests/alphabet/","es") == True
+

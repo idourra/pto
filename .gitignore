@@ -2,6 +2,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
+tests/test_pto/__pycache__/
+
 
 # C extensions
 *.so
@@ -137,4 +139,4 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-pto/__pycache__/
+pto/__pycache__/*
