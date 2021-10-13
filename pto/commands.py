@@ -147,12 +147,6 @@ def extract_exif_date(filename) -> str:
                     image_date_data = "0000:00:00 00:00:00"
                 if "-" in image_date_data:
                     image_date_data = image_date_data.replace("-", ":")
-                # if len(image_date_data) > 19:
-                #     image_date_data = image_date_data[0:18]
-                # if "T" in image_date_data.upper():
-                #     image_date_data = image_date_data.replace("T", " ")
-                # elif not " " in image_date_data:
-                #     image_date_data = image_date_data[0:9] + " " + image_date_data[10:]
 
                 return datetime.strptime(image_date_data, '%Y:%m:%d %H:%M:%S')
             else:
@@ -170,16 +164,16 @@ def create_date_path(dest_path: str, file_date: str) -> str:
     day_path = os.path.join(month_path, str(file_date.day))
     try:
         if not os.path.exists(dest_path):
-            os.mkdir(dest_path)
+            os.makedirs(dest_path)
             print(dest_path)
         if not os.path.exists(year_path):
-            os.mkdir(year_path)
+            os.makedirs(year_path)
             print(year_path)
         if not os.path.exists(month_path):
-            os.mkdir(month_path)
+            os.makedirs(month_path)
             print(month_path)
         if not os.path.exists(day_path):
-            os.mkdir(day_path)
+            os.makedirs(day_path)
             print(day_path)
 
         return day_path
@@ -187,10 +181,10 @@ def create_date_path(dest_path: str, file_date: str) -> str:
         print(error)
         return None
 
-def create_alphabet_folder(dest_path: str, iso_language: str) -> bool:
+def create_alphabet_folder(dest_path: str, iso_language = "en") -> bool:
     if iso_language == "es":
         alphabet = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ'
-    elif iso_language == "es":
+    elif iso_language == "en":
         alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
     else:
         alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -198,22 +192,27 @@ def create_alphabet_folder(dest_path: str, iso_language: str) -> bool:
     # create the base destination directory
     if not os.path.exists(dest_path):
         try:
-            os.mkdir(dest_path)
+            os.makedirs(dest_path)
         except(Exception) as error:
             print(error)
             return False
-    def create_hierarchy():
-        for letter in alphabet:
-            if not os.path.exists(os.path.join(dest_path, letter)):
-                try:
-                    os.mkdir(os.path.join(dest_path, letter))
-                except(Exception) as error:
-                    print(error)
-                    return False
+    
+    for letter in alphabet:
+        if not os.path.exists(os.path.join(dest_path, letter)):
+            # create folder
+            try:
+                os.makedirs(os.path.join(dest_path, letter))
+            except(Exception) as error:
+                print(error)
+                return False
     return True
 
-def split_folder_to_subfolders(src_files: list, dest_path: str, number_of_files: int) -> bool:
-
+def split_folder_to_subfolders(src_folder: str, dest_path: str, file_ext : list, number_of_files: int) -> bool:
+    try:
+        src_files = read_src_files(src_folder,file_ext)
+    except(Exception) as error:
+        print(error)
+        return False
     src_files = sorted(src_files)
     # calculate the number of folders to create in relation with the total of files
     if len(src_files) % number_of_files > 0:
@@ -248,19 +247,6 @@ def split_folder_to_subfolders(src_files: list, dest_path: str, number_of_files:
             except(Exception) as error:
                 print(error)
                 return False
-    return True
-
-
-def split_folder(dest_path: str, files: list, n: int) -> bool:
-    # split a list of files into subfolders
-    files = sorted(files)
-    try:
-        print(dest_path)
-        split_folder_to_subfolders(
-            files, os.path.join(dest_path, "subfolder", str(n)))
-    except(Exception) as error:
-        print(error)
-        return False
     return True
 
 
