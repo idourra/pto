@@ -207,9 +207,9 @@ def create_alphabet_folder(dest_path: str, iso_language = "en") -> bool:
                 return False
     return True
 
-def split_folder_to_subfolders(src_folder: str, dest_path: str, file_ext : list, number_of_files: int) -> bool:
+def split_folder_to_subfolders(src_folder: str, dest_path: str, file_exts : list, number_of_files: int) -> bool:
     try:
-        src_files = read_src_files(src_folder,file_ext)
+        src_files = read_src_files(src_folder,file_exts)
     except(Exception) as error:
         print(error)
         return False
@@ -249,19 +249,18 @@ def split_folder_to_subfolders(src_folder: str, dest_path: str, file_ext : list,
                 return False
     return True
 
-
-def read_src_files(src_path: str, extensions: list) -> list:
+def read_src_files(src_path: str, extensions: list, keyword = "") -> list:
     # returns a list with all files with the extension contained in the variable extensions
     try:
-        files = {p.resolve() for p in pathlib.Path(
-            src_path).glob("**/*") if p.suffix in extensions}
+        files = {p.resolve() for p in pathlib.Path(src_path).glob("**/*") if p.suffix.lower() in extensions and keyword.lower() in p.stem.lower()} 
         # sort files by name
         files = sorted(files)
         print(f'{str(len(files))} files in the {src_path}')
         return files
     except(Exception) as error:
         print(error)
-
+        return [str(error)]
+        
 
 def put_files_in_calendar(src_path: str, dest_path: str, files: list) -> bool:
     # from a list of file names in a path, checks every image and using the exif metadata
@@ -271,6 +270,7 @@ def put_files_in_calendar(src_path: str, dest_path: str, files: list) -> bool:
     none_dated_files = []
     for file in files:
         src_file_path = os.path.join(src_path, file)
+        #src_file_path = pathlib.Path(src_path, file)
         if os.path.isfile(src_file_path) and ".jpg" in src_file_path.lower():
             image_date = extract_exif_date(src_file_path)
             if image_date:

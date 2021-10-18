@@ -11,8 +11,8 @@ def test_read_src_files():
     WHEN the execute method is called
     THEN a list of file names is returned
     """
-    files = cm.read_src_files("./tests/", [".img", ".IMG"])
-    assert files is not None
+    files = cm.read_src_files("/home/urra/tests/data/", [".img", ".IMG"])
+    assert files==[]
 
 
 def test_create_date_path():
@@ -40,9 +40,9 @@ def test_put_files_in_calendar():
     THEN return none_dated_files, init_time, end_time
     """
     files = cm.read_src_files(
-        "/media/urra/M32GBNEGRA/20181029 Bellas Artes Cuenta Conmigo/", [".jpg", ".JPG"])
-    assert cm.put_files_in_calendar("/media/urra/M32GBNEGRA/20181029 Bellas Artes Cuenta Conmigo/",
-                                    "/media/urra/PELICULAS Y ENTRETENIMIENTO/jpg_salva_calendar", files) == True
+        "/home/urra/projects/pto/tests/data/dated_images/", [".jpg", ".JPG"])
+    assert cm.put_files_in_calendar("/home/urra/projects/pto/tests/data/dated_images/",
+                                    "/home/urra/tests/folders/calendar/", files) == True
 
 
 def test_split_folder_to_subfolders():
@@ -53,7 +53,7 @@ def test_split_folder_to_subfolders():
     THEN the content of the src_folder is splitted into subfolders containing the number_of_files gived
     """
     assert cm.split_folder_to_subfolders(
-        "/home/urra/Pictures/", "/home/urra/tests/folders/",[".jpg"], 1) == True
+        "/home/urra/projects/pto/tests/data/dated_images/2017/10/10/", "/home/urra/tests/folders/",[".jpg"], 10) == True
 
 
 def test_create_alphabet_folder():

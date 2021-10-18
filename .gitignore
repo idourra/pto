@@ -3,7 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 tests/test_pto/__pycache__/
-
+tests/data/
 
 # C extensions
 *.so
