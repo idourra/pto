@@ -11,8 +11,8 @@ def test_read_src_files():
     WHEN the execute method is called
     THEN a list of file names is returned
     """
-    files = cm.read_src_files("/home/urra/tests/data/", [".img", ".IMG"])
-    assert files==[]
+    files = cm.read_src_files("/home/urra/tests/data/", [".img", ".IMG"],"2017")
+    assert type(files) == list 
 
 
 def test_create_date_path():
@@ -58,3 +58,13 @@ def test_split_folder_to_subfolders():
 
 def test_create_alphabet_folder():
     assert cm.create_alphabet_folder("/home/urra/tests/") == True
+
+def test_extract_exif_date():
+    exif_date = cm.extract_exif_date("/home/urra/projects/pto/tests/data/dated_images/2017/10/10/20171010_202743.jpg")
+    print(exif_date)
+    assert type(exif_date) == datetime
+
+def test_extract_exif_make_model():
+    exif_data = cm.extract_exif_data('/home/urra/Pictures/jpg_camaras_salva/nikon_e3100_amalio/E31006115.JPG')
+    make_model = cm.extract_exif_make_model(exif_data)
+    assert make_model == 'NIKON-E3100'

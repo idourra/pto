@@ -131,6 +131,11 @@ def extract_exif_data(filename) -> dict:
         print(error)
         return None
 
+def extract_exif_make_model(exif_data:dict) -> str:
+    try:
+        return exif_data.get("make") + "-" +exif_data.get("model")
+    except(Exception) as error:
+        return str(error)
 
 def extract_exif_date(filename) -> str:
     try:
@@ -138,11 +143,11 @@ def extract_exif_date(filename) -> str:
             image = Image(image_file)
             if image.has_exif:
                 if image.datetime_original:
-                    image_date_data = image.datetime_original[0:10]+" 00:00:00"
+                    image_date_data = image.datetime_original
                 elif image.datetime_digitized:
-                    image_date_data = image.datetime_digitized[0:10]+" 00:00:00"
+                    image_date_data = image.datetime_digitized
                 elif image.datetime:
-                    image_date_data = image.datetime[0:10]+" 00:00:00"
+                    image_date_data = image.datetime
                 else:
                     image_date_data = "0000:00:00 00:00:00"
                 if "-" in image_date_data:
@@ -269,8 +274,8 @@ def put_files_in_calendar(src_path: str, dest_path: str, files: list) -> bool:
     # for eg. /2021/10/1/ etc
     none_dated_files = []
     for file in files:
-        src_file_path = os.path.join(src_path, file)
-        #src_file_path = pathlib.Path(src_path, file)
+        #src_file_path = os.path.join(src_path, file)
+        src_file_path = pathlib.Path(src_path, file)
         if os.path.isfile(src_file_path) and ".jpg" in src_file_path.lower():
             image_date = extract_exif_date(src_file_path)
             if image_date:
