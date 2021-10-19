@@ -59,6 +59,10 @@ def test_split_folder_to_subfolders():
 def test_create_alphabet_folder():
     assert cm.create_alphabet_folder("/home/urra/tests/") == True
 
+def test_extract_exif_data():
+    exif_data = cm.extract_exif_data("/home/urra/projects/pto/tests/data/dated_images/2017/10/10/20171010_202743.jpg")
+    assert type(exif_data) == dict
+
 def test_extract_exif_date():
     exif_date = cm.extract_exif_date("/home/urra/projects/pto/tests/data/dated_images/2017/10/10/20171010_202743.jpg")
     print(exif_date)
@@ -68,3 +72,24 @@ def test_extract_exif_make_model():
     exif_data = cm.extract_exif_data('/home/urra/Pictures/jpg_camaras_salva/nikon_e3100_amalio/E31006115.JPG')
     make_model = cm.extract_exif_make_model(exif_data)
     assert make_model == 'NIKON-E3100'
+
+def test_fetch_images_by_camera_model():
+    
+    """
+    GIVEN a list of valid filenames and a camera model
+    WHEN the execute method is called
+    THEN return a list of images files names that contains that model in the exif metadata
+    """
+    files = cm.read_src_files("/home/urra/projects/pto/tests/data/dated_images/", [".jpg", ".JPG"])
+    filtered_files = cm.fetch_images_by_camera_model(files,"SM-J500H")
+
+def test_fetch_models():
+    cameras = []
+    files = cm.read_src_files("/home/urra/projects/pto/tests/data/dated_images/", [".jpg", ".JPG"])
+    for file in files:
+        exif_data = cm.extract_exif_data(file)
+        model = cm.extract_exif_make_model(exif_data)
+        if not model in cameras:
+            cameras.append(model)
+            print(cameras)
+    return

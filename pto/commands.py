@@ -118,24 +118,32 @@ def is_path_exists_or_creatable(pathname: str) -> bool:
         return False
 
 
-def extract_exif_data(filename) -> dict:
+def extract_exif_data(filename :str) -> dict:
     try:
         with open(filename, "rb") as image_file:
             image = Image(image_file)
-            if image.has_exif:
-                return image.get_all()
-            else:
-                print("does not contain any EXIF information.")
+            try:
+                return image.get_all
+            except(Exception) as error:
+                print(error)
+                return {}
+    except(Exception) as error:
+        print(error)
+        return {}
+
+def extract_exif_attribute(filename:str,tag:str) -> str:
+    try:
+        with open(filename, "rb") as image_file:
+            image = Image(image_file)
+            try:
+                if image.has_exif and image.get(tag):
+                    return image.get(tag)
+            except(Exception) as error:
+                print(error)
                 return None
     except(Exception) as error:
         print(error)
         return None
-
-def extract_exif_make_model(exif_data:dict) -> str:
-    try:
-        return exif_data.get("make") + "-" +exif_data.get("model")
-    except(Exception) as error:
-        return str(error)
 
 def extract_exif_date(filename) -> str:
     try:
@@ -160,6 +168,24 @@ def extract_exif_date(filename) -> str:
     except(Exception) as error:
         print(error)
         return None
+
+
+def is_exif_model(filename:str, model:str) -> bool:
+    try:
+        with open(filename, "rb") as image_file:
+            image = Image(image_file)
+            try:
+                if image.has_exif and model.lower() in image.model.lower():
+                    print(image.model)
+                    return True
+                else:
+                    return False
+            except(Exception) as error:
+                print(error)
+                return False
+    except(Exception) as error:
+        print(error)
+        return False
 
 
 def create_date_path(dest_path: str, file_date: str) -> str:
@@ -300,3 +326,16 @@ def put_files_in_calendar(src_path: str, dest_path: str, files: list) -> bool:
                 except(Exception) as error:
                     print(error)
     return True
+
+def fetch_images_by_camera_model(files:list, model:str)->list:
+    images_names = []
+    for file in files:
+        if is_exif_model(file,model):
+            images_names.append(file)
+    return images_names
+
+
+
+
+
+
