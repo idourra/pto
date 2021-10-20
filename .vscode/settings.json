@@ -3,5 +3,6 @@
         "tests"
     ],
     "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true
+    "python.testing.pytestEnabled": true,
+    "python.condaPath": "/home/urra/opt/miniconda3/envs/pto"
 }
