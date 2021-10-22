@@ -4,5 +4,8 @@
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
-    "python.condaPath": "/home/urra/opt/miniconda3/envs/pto"
+    "python.condaPath": "/home/urra/opt/miniconda3/envs/pto",
+    "terminal.integrated.env.linux": {
+    
+    }
 }

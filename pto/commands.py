@@ -8,10 +8,12 @@ the three fists methods come from https://github.com/Zenith00/utils
 from datetime import datetime
 import errno
 import os
+import time
 import pathlib
 import shutil
 import sys
 import numpy
+import pandas as pd
 from exif import Image, DATETIME_STR_FORMAT
 
 # Sadly, Python fails to provide the following magic number for us.
@@ -117,76 +119,20 @@ def is_path_exists_or_creatable(pathname: str) -> bool:
     except OSError:
         return False
 
-
-def extract_exif_data(filename :str) -> dict:
+def read_src_files(src_path: str, extensions = [".jpg",".jpeg"], keyword = "") -> list:
+    # returns a list with all files with the extension contained in the variable extensions
+    sys.setrecursionlimit(4000)
     try:
-        with open(filename, "rb") as image_file:
-            image = Image(image_file)
-            try:
-                return image.get_all
-            except(Exception) as error:
-                print(error)
-                return {}
+        files = {p.resolve() for p in pathlib.Path(src_path).glob("**/*") if p.suffix.lower() in extensions and keyword.lower() in p.stem.lower()} 
+        # sort files by name
+        files = sorted(files)
+        print(f'{str(len(files))} files in {src_path} path tree with extensions {extensions}')
+        sys.setrecursionlimit(1000)
+        return files
     except(Exception) as error:
         print(error)
-        return {}
-
-def extract_exif_attribute(filename:str,tag:str) -> str:
-    try:
-        with open(filename, "rb") as image_file:
-            image = Image(image_file)
-            try:
-                if image.has_exif and image.get(tag):
-                    return image.get(tag)
-            except(Exception) as error:
-                print(error)
-                return None
-    except(Exception) as error:
-        print(error)
-        return None
-
-def extract_exif_date(filename) -> str:
-    try:
-        with open(filename, "rb") as image_file:
-            image = Image(image_file)
-            if image.has_exif:
-                if image.datetime_original:
-                    image_date_data = image.datetime_original
-                elif image.datetime_digitized:
-                    image_date_data = image.datetime_digitized
-                elif image.datetime:
-                    image_date_data = image.datetime
-                else:
-                    image_date_data = "0000:00:00 00:00:00"
-                if "-" in image_date_data:
-                    image_date_data = image_date_data.replace("-", ":")
-
-                return datetime.strptime(image_date_data, '%Y:%m:%d %H:%M:%S')
-            else:
-                print("does not contain any EXIF information.")
-                return None
-    except(Exception) as error:
-        print(error)
-        return None
-
-
-def is_exif_model(filename:str, model:str) -> bool:
-    try:
-        with open(filename, "rb") as image_file:
-            image = Image(image_file)
-            try:
-                if image.has_exif and model.lower() in image.model.lower():
-                    print(image.model)
-                    return True
-                else:
-                    return False
-            except(Exception) as error:
-                print(error)
-                return False
-    except(Exception) as error:
-        print(error)
-        return False
-
+        sys.setrecursionlimit(1000)
+        return []
 
 def create_date_path(dest_path: str, file_date: str) -> str:
 
@@ -279,21 +225,41 @@ def split_folder_to_subfolders(src_folder: str, dest_path: str, file_exts : list
                 print(error)
                 return False
     return True
-
-def read_src_files(src_path: str, extensions: list, keyword = "") -> list:
-    # returns a list with all files with the extension contained in the variable extensions
-    try:
-        files = {p.resolve() for p in pathlib.Path(src_path).glob("**/*") if p.suffix.lower() in extensions and keyword.lower() in p.stem.lower()} 
-        # sort files by name
-        files = sorted(files)
-        print(f'{str(len(files))} files in the {src_path}')
-        return files
-    except(Exception) as error:
-        print(error)
-        return [str(error)]
         
+def cronofiles(paths: list, dest_path: str, extensions = [".jpg",".jpeg"]) ->bool:
+    # creates a cronological copy of the images in the file system of type YYY/MM/DD
+    # from a list of files names checks every image and using the exif metadata
+    # copy the file to the file system in a structure representing a calendar
+    # if the image file does not have a date, the image file is located in a none_exif_date folder
+    for src_path in paths:
+        try:
+            files = read_src_files(src_path,extensions)
+        except(Exception) as error:
+            print(error)
+            return False
+        non_dated_files = []
+        for file in files:
+            image_date = get_exif_attribute(file,"date")
+            if image_date:
+                try:
+                    shutil.copy2(file, create_date_path(dest_path, image_date))
+                except(Exception) as error:
+                    print(error)
+            else:
+                non_dated_files.append(file)
+                ndf_path = pathlib.Path(dest_path / "non_dated_files")
+                try:
+                    ndf_path.mkdir(parents= True, exist_ok=True )
+                except(Exception) as error:
+                    print(error)
+                try:
+                    shutil.copy2(file, ndf_path)
+                except(Exception) as error:
+                    print(error)    
+        
+    return True
+      
 
-def put_files_in_calendar(src_path: str, dest_path: str, files: list) -> bool:
     # from a list of file names in a path, checks every image and using the exif metadata
     # copy the file to the file system in a structure representing a calendar
     # if the image file does not have a date, the image file is located in a none_exif_date folder
@@ -303,7 +269,7 @@ def put_files_in_calendar(src_path: str, dest_path: str, files: list) -> bool:
         #src_file_path = os.path.join(src_path, file)
         src_file_path = pathlib.Path(src_path, file)
         if os.path.isfile(src_file_path) and ".jpg" in src_file_path.lower():
-            image_date = extract_exif_date(src_file_path)
+            image_date = get_exif_date(src_file_path)
             if image_date:
                 file_path = create_date_path(dest_path, image_date)
                 try:
@@ -327,15 +293,127 @@ def put_files_in_calendar(src_path: str, dest_path: str, files: list) -> bool:
                     print(error)
     return True
 
-def fetch_images_by_camera_model(files:list, model:str)->list:
+def move_files_to_dest(src_path: str, dest_path:str, extensions = [".jpg",".jpeg"], keyword = "") -> bool:
+    files = read_src_files(src_path, extensions, keyword)
+    dest_path = pathlib.Path(dest_path)
+    try:
+        pathlib.Path(dest_path).mkdir(parents=True,exist_ok=True)
+        for file in files:
+            try:
+                shutil.move(file,dest_path)
+            except(Exception) as error:
+                print(error)     
+    except(Exception) as error:
+        print(error)
+        return
+
+def get_exif_date(filename) -> str:
+    try:
+        with open(filename, "rb") as image_file:
+            image = Image(image_file)
+            if image.has_exif:
+                if image.datetime_original:
+                    image_date_data = image.datetime_original
+                elif image.datetime_digitized:
+                    image_date_data = image.datetime_digitized
+                elif image.datetime:
+                    image_date_data = image.datetime
+                else:
+                    image_date_data = "0000:00:00 00:00:00"
+                if "-" in image_date_data:
+                    image_date_data = image_date_data.replace("-", ":")
+
+                return datetime.strptime(image_date_data, '%Y:%m:%d %H:%M:%S')
+            else:
+                print("does not contain any EXIF information.")
+                return None
+    except(Exception) as error:
+        print(error)
+        return None
+
+def fetch_images_by_camera_model(src_path: str, extensions: list, model:str)->list:
+    # fetch a list of filenames with the model name or a keyword in the exif model metadata
+    #checks every image in source path tree
+    try:
+        filesnames = read_src_files(src_path,extensions)
+    except(Exception) as error:
+        print(error)
+        filesnames = []
     images_names = []
-    for file in files:
-        if is_exif_model(file,model):
-            images_names.append(file)
+    try:
+        print(f'processing all images in the path ...')
+        for index, file in enumerate(filesnames):
+            if is_exif_model(file,model):
+                images_names.append(file)
+                print(f'{index} image  {file} taken with camera model {model}')
+    except(Exception) as error:
+        print(error)
+    finally:
+        print(f'{len(images_names)} images taken with camera model {model}')
     return images_names
 
+def is_exif_model(filename:str, model:str) -> bool:
+    try:
+        with open(filename, "rb") as image_file:
+            image = Image(image_file)
+            try:
+                if image.has_exif and model.lower() in image.model.lower():
+                    print(image.model)
+                    return True
+            except(Exception) as error:
+                print(f"{image.name} {error}")
+                return False
+    except(Exception) as error:
+        print(error)
+        return False
 
+def get_exif_data(filename :str) -> dict:
+    try:
+        with open(filename, "rb") as image_file:
+            image = Image(image_file)
+            try:
+                return image.get_all()
+            except(Exception) as error:
+                print(error)
+                return {}
+    except(Exception) as error:
+        print(error)
+        return {}
 
+def get_exif_attribute(filename:str,tag:str) -> str:
+    try:
+        with open(filename, "rb") as image_file:
+            image = Image(image_file)
+            try:
+                if image.has_exif and image.get(tag):
+                    return image.get(tag)
+            except(Exception) as error:
+                print(error)
+                return None
+    except(Exception) as error:
+        print(error)
+        return None
 
+def create_data_table(src_path: str, dest_path: str, filename="excell_file.xlsx", extensions = [".jpg", ".jpeg"], keyword= ""):
+    files = read_src_files(src_path, extensions, keyword)
+    all_files = []
+    for i in files:
+        exif_data = get_exif_data(i)
+        make = get_exif_data("make")
+        model = get_exif_data("model")
+        date_time_original = get_exif_data("datetime_original")
+        date_time_digitized = get_exif_data("datetime_digitized")
+        size = i.stat().st_size
+        all_files.append((i.as_uri(),i.name, i.parent,make, model,date_time_original, date_time_digitized, size, time.ctime(i.stat().st_ctime)))
 
+    columns = ["url","file_name", "parent", "maker", "model","datetime_original", "datetime_digitized", "file_size","record_created"]
+    df = pd.DataFrame.from_records(all_files, columns=columns)
 
+    print(df.head())
+    filename = pathlib.Path(dest_path) / filename
+    try:
+        df.to_excel(filename)
+        print(f"{filename} created")
+    except(Exception) as error:
+        print(error)
+    return
