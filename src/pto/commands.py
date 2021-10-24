@@ -12,6 +12,7 @@ import time
 import pathlib
 import shutil
 import sys
+import json
 import numpy
 import pandas as pd
 from exif import Image, DATETIME_STR_FORMAT
@@ -126,7 +127,7 @@ def read_src_files(src_path: str, extensions = [".jpg",".jpeg"], keyword = "") -
         files = {p.resolve() for p in pathlib.Path(src_path).glob("**/*") if p.suffix.lower() in extensions and keyword.lower() in p.stem.lower()} 
         # sort files by name
         files = sorted(files)
-        print(f'{str(len(files))} files in {src_path} path tree with extensions {extensions}')
+        #print(f'{str(len(files))} files in {src_path} path tree with extensions {extensions}')
         sys.setrecursionlimit(1000)
         return files
     except(Exception) as error:
@@ -394,26 +395,115 @@ def get_exif_attribute(filename:str,tag:str) -> str:
         print(error)
         return None
 
-def create_data_table(src_path: str, dest_path: str, filename="excell_file.xlsx", extensions = [".jpg", ".jpeg"], keyword= ""):
-    files = read_src_files(src_path, extensions, keyword)
-    all_files = []
-    for i in files:
-        exif_data = get_exif_data(i)
-        make = get_exif_data("make")
-        model = get_exif_data("model")
-        date_time_original = get_exif_data("datetime_original")
-        date_time_digitized = get_exif_data("datetime_digitized")
-        size = i.stat().st_size
-        all_files.append((i.as_uri(),i.name, i.parent,make, model,date_time_original, date_time_digitized, size, time.ctime(i.stat().st_ctime)))
+class ImageExifOrganizer:
+    """
+    Instantiate an ImageExifOrganizer object.
+    Files will be scanned and exif metadata extracted and converted to json 
+    to conform a table and export to different formats(excell, csv, json) 
+    
+    :param src_path: The path that will be scanned for images
+    :type src_path: str
+    
+    :param dest_path: The path where the excell table willl be created
+    :type dest_path: str
 
-    columns = ["url","file_name", "parent", "maker", "model","datetime_original", "datetime_digitized", "file_size","record_created"]
-    df = pd.DataFrame.from_records(all_files, columns=columns)
+    :param excell_filename: A valid name of the excell file. If not gived it will use excell_file.xlsx as default value
+    :type excell_filename: str 
 
-    print(df.head())
-    filename = pathlib.Path(dest_path) / filename
-    try:
-        df.to_excel(filename)
-        print(f"{filename} created")
-    except(Exception) as error:
-        print(error)
-    return
+    :param extensions: A list of valid file extensions. Default [".jpg", ".jpeg"] the more common images format
+    :type extensions: list
+
+    :param keyword: A keyword to filter the files by its name. Default ""
+    :type keyword: str
+    """
+    def __init__(self, src_path="", dest_path="", excell_filename="excell_file.xlsx", extensions = [".jpg", ".jpeg"], keyword= ""):
+        if src_path == "":
+            self.src_path = pathlib.Path().cwd()
+        else: 
+            self.src_path = pathlib.Path(src_path)
+
+        if dest_path == "":
+            self.dest_path = self.src_path
+        else:
+            self.dest_path = pathlib.Path(dest_path)
+
+        self.excell_filename = excell_filename
+        self.extensions = extensions
+        self.keyword = keyword
+        self.df = pd.DataFrame()
+
+    def get_files(self) ->list:
+        sys.setrecursionlimit(5000)
+        try:
+            files = {p.resolve() for p in self.src_path.glob("**/*") if p.suffix.lower() in self.extensions and self.keyword.lower() in p.stem.lower()} 
+            # sort files by name
+            files = sorted(files)
+            #print(f'{str(len(files))} files in {src_path} path tree with extensions {extensions}')
+            sys.setrecursionlimit(1000)
+            return files
+        except(Exception) as error:
+            print(error)
+            sys.setrecursionlimit(1000)
+            return []
+
+    def get_exif_data(self, filename :str) -> dict:
+        try:
+            with open(filename, "rb") as image_file:
+                image = Image(image_file)
+                try:
+                    return image.get_all()
+                except(Exception) as error:
+                    print(error)
+                    return {}
+        except(Exception) as error:
+            print(error)
+            return {}
+
+    def get_exif_attribute(self, exif_data:dict, tag: str):
+        return exif_data.get(tag)
+
+    def read_files_exif_data(self, files:list):
+        all_files_exif_metadata = []
+        for file in files:
+            # get exif metadata of the image
+            exif_data = self.get_exif_data(file)
+            # make = exif_data.get("make")
+            # model =exif_data.get("model")
+            # date_time_original = exif_data.get("datetime_original")
+            # date_time_digitized = exif_data.get("datetime_digitized")
+            # size = file.stat().st_size
+            #all_files.append((file.as_uri(),file.name, file.parent,make, model,date_time_original, date_time_digitized, size, time.ctime(file.stat().st_ctime)))
+            all_files_exif_metadata.append((file.as_uri(), file.stat().st_size, file.name, file.parent.absolute(), time.ctime(file.stat().st_ctime),time.ctime(file.stat().st_mtime),
+                exif_data.get("make"),exif_data.get("model"), exif_data.get("datetime_original"), exif_data.get("datetime_digitized")  ))
+        return all_files_exif_metadata  
+    
+    
+    def create_data_frame(self):
+        columns = ["url","file_size","file_name", "parent", "datetime_created","datetime_modified","exif_metadata_make","exif_metadata_model","exif_metadata_datetime_original","exif_metadata_datetime_digitized"]
+        self.df = pd.DataFrame.from_records(self.read_files_exif_data(self.get_files()), columns=columns)
+        print(self.df.head())
+        return 
+    
+    def save_excell_file(self,excell_filename):
+        excell_filename = pathlib.Path(self.dest_path) / excell_filename
+        self.excell_filename = excell_filename
+        try:
+            self.df.to_excel(excell_filename)
+            print(f"{excell_filename} created")
+            return True
+        except(Exception) as error:
+            print(error)
+            return False
+    
+    def save_json_data(self, json_filename :str):
+        sys.setrecursionlimit(5000)
+        json_filename = pathlib.Path(self.dest_path) / json_filename
+        try:
+            self.df.to_json("data.json")
+            print(f"{json_filename} created")
+            sys.setrecursionlimit(1000)
+            return True
+        except(Exception) as error:
+            print(error)
+            sys.setrecursionlimit(1000)
+            return False
