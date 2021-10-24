@@ -194,4 +194,10 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+#project cache
+*.pyc
+
+# project test data
+tests/data/
+
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,linux,intellij+all,git,visualstudiocode

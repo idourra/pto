@@ -17,7 +17,7 @@ from src.pto.organizer import Organizer as o
 
 
 """
-def test_create_organizer():
+
 
 
 
