@@ -19,8 +19,8 @@ from exif import Image, DATETIME_STR_FORMAT
 
 class Organizer:
     """
-    Instantiate an ImageExifOrganizer object.
-    Files will be scanned and exif metadata extracted and converted to json 
+    Instantiate a Organizer object.
+    an Organizer will scan files  and exif metadata extracted and converted to json 
     to conform a table and export to different formats(excell, csv, json) 
     
     :param src_path: The path that will be scanned for images
