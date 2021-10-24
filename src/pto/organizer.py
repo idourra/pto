@@ -76,16 +76,13 @@ class Organizer:
         except(Exception) as error:
             print(error)
             return {}
-    
-    
+   
     def get_exif_attribute(self, exif_data:dict, tag: str):
         return exif_data.get(tag)
 
-    
     def read_files_exif_data(self, files:list):
         all_files_exif_metadata = []
-        for file in files:
-            
+        for file in files:           
             # get exif metadata of the image
             exif_data = self.get_exif_data(file)
             
