@@ -39,5 +39,11 @@ class TestOrganizer():
         exif_data = self.orgz.get_exif_data(self.filename)
         assert self.orgz.get_exif_attribute(exif_data,"model") == "SM-J500H"
 
+    def test_read_files_exif_data(self):
+        filenames = self.orgz.get_files()
+        exif_data = self.orgz.read_files_exif_data(filenames)
+        assert isinstance(exif_data, list)
+
+
 if __name__ == '__main__':
     pytest.main()
