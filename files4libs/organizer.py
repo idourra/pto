@@ -5,10 +5,11 @@ Python package to organize images using the exif date data in a file system stru
 the three fists methods come from https://github.com/Zenith00/utils
 """
 
-from datetime import datetime
+from datetime import datetime, date
 import time
 import pathlib
 import sys
+from typing import Optional
 import pandas as pd
 from collections import namedtuple
 from exif import Image, DATETIME_STR_FORMAT
@@ -31,7 +32,7 @@ class Organizer:
     :param keyword: A keyword to filter the files by its name. Default ""
     :type keyword: str
     """
-    def __init__(self, src_path="", dest_path="", extensions = [".jpg", ".jpeg"], keyword= ""):
+    def __init__(self, src_path="", dest_path="", extensions = [".jpg", ".jpeg", ".JPG", ".JPEG"], keyword= ""):
         if src_path == "":
             self.src_path = pathlib.Path().cwd()
         else: 
@@ -148,3 +149,5 @@ class Organizer:
             print(error)
             sys.setrecursionlimit(1000)
             return False
+
+   
