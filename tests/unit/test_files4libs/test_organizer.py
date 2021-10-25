@@ -22,6 +22,7 @@ from files4libs import organizer
 class TestOrganizer():
     def setup(self):
         self.orgz = organizer.Organizer(src_path="/home/urra/projects/pto/tests/data/dated_images/2017/1/1/")
+        self.filename = Path("/home/urra/projects/pto/tests/data/dated_images/2017/1/1/20170101_194348.jpg")
 
     # test using self.organizer down here
 
@@ -31,14 +32,12 @@ class TestOrganizer():
             assert file.suffix in self.orgz.extensions and "20170101" in file.name
     
     def test_get_image_exif_metadata(self):
-        filename = Path("/home/urra/projects/pto/tests/data/dated_images/2017/1/1/20170101_194348.jpg")
-        exif_data = self.orgz.get_exif_data(filename)
-        assert exif_data.get("make") == "samsung"
-        assert exif_data.get("model") == "SM-J500H"
-        assert exif_data.get("datetime_original") == "2017:01:01 19:43:48"
-
+        exif_data = self.orgz.get_exif_data(self.filename)
+        assert exif_data.get("make") == "samsung" and exif_data.get("model") == "SM-J500H" and exif_data.get("datetime_original") == "2017:01:01 19:43:48"
     
-        
+    def test_get_exif_attribute(self):
+        exif_data = self.orgz.get_exif_data(self.filename)
+        assert self.orgz.get_exif_attribute(exif_data,"model") == "SM-J500H"
 
 if __name__ == '__main__':
     pytest.main()
