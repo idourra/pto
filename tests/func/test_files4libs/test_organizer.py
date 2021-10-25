@@ -1,6 +1,6 @@
 
 import pytest
-from src.pto.organizer import Organizer as o
+from files4libs import organizer as o
 """
 
     GIVEN - what are the initial conditions for the test?

@@ -19,7 +19,7 @@ setup(
     description="A Python library for organizing digital files data into collections and catalogs",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://files_to_libraries.readthedocs.io/",
+    url="https://files4libs.readthedocs.io/",
     author="Pedro Urra",
     author_email="urrape@gmail.com",
     license="MIT",
@@ -34,7 +34,7 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Operating System :: OS Independent"
     ],
-    packages=["medium_multiply"],
+    packages=["files4libs"],
     include_package_data=True,
     install_requires=["numpy"]
 )

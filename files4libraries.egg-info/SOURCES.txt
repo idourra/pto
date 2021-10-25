@@ -1,0 +1,11 @@
+README.md
+setup.py
+files4libraries.egg-info/PKG-INFO
+files4libraries.egg-info/SOURCES.txt
+files4libraries.egg-info/dependency_links.txt
+files4libraries.egg-info/requires.txt
+files4libraries.egg-info/top_level.txt
+files4libs/__init__.py
+files4libs/app.py
+files4libs/commands.py
+files4libs/organizer.py
