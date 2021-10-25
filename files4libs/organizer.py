@@ -15,7 +15,7 @@ from exif import Image, DATETIME_STR_FORMAT
 
 class Organizer:
     """
-    Instantiate a Organizer object.
+    Instantiate an Organizer object.
     an Organizer will scan files  and exif metadata extracted and converted to json 
     to conform a table and export to different formats(excell, csv, json) 
     
