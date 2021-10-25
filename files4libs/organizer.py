@@ -6,15 +6,11 @@ the three fists methods come from https://github.com/Zenith00/utils
 """
 
 from datetime import datetime
-import errno
-import os
 import time
 import pathlib
-import shutil
 import sys
-import json
-import numpy
 import pandas as pd
+from collections import namedtuple
 from exif import Image, DATETIME_STR_FORMAT
 
 class Organizer:
@@ -65,46 +61,72 @@ class Organizer:
             return []
 
     def get_exif_data(self, filename :str) -> dict:
+        exif_data ={}
         try:
             with open(filename, "rb") as image_file:
                 image = Image(image_file)
                 try:
-                    return image.get_all()
+                    exif_data = image.get_all()
+                    return exif_data
                 except(Exception) as error:
-                    print(error)
-                    return {}
+                    print(f" {filename} return an image.get_all error: {error} ")
+                    try:
+                        # get minimum metadata
+                        exif_data = {"make":image.make,"model":image.model,"datetime":image.datetime,"datetime_original":image.datetime_original,
+                        "datetime_digitized":image.datetime_digitized}
+                        return exif_data
+                    except(Exception) as error:
+                        print(error)
+                        return exif_data
         except(Exception) as error:
-            print(error)
-            return {}
+            print(f"{filename} error trying to open image: {error}")
+            return exif_data
    
     def get_exif_attribute(self, exif_data:dict, tag: str):
         return exif_data.get(tag)
 
-    def read_files_exif_data(self, files:list):
+    def read_files_exif_data(self, files:list) ->list:
         all_files_exif_metadata = []
         for file in files:           
             # get exif metadata of the image
             exif_data = self.get_exif_data(file)
-            
-            #conform a tuple with the metadata of the file and add to the list of files
+            make = exif_data.get("make")
+            model = exif_data.get("model")
+            datetime_original = exif_data.get("datetime_original")
+            datetime_digitized = exif_data.get("datetime_digitized")
+
+            #conform a tuple with selected fields of the  metadata of the file and add to the list of files
             all_files_exif_metadata.append((file.as_uri(), file.stat().st_size, file.name, file.parent.absolute(), time.ctime(file.stat().st_ctime),time.ctime(file.stat().st_mtime),
-                exif_data.get("make"),exif_data.get("model"), exif_data.get("datetime_original"), exif_data.get("datetime_digitized")  ))
+                make,model, datetime_original, datetime_digitized ))
         
         return all_files_exif_metadata  
     
-    
-    def create_data_frame(self):
+    def create_data_frame(self,data =[]) -> pd.DataFrame:
+        if data == []:
+            data = self.read_files_exif_data(self.get_files())
+        
         columns = ["url","file_size","file_name", "parent", "datetime_created","datetime_modified","exif_metadata_make","exif_metadata_model","exif_metadata_datetime_original","exif_metadata_datetime_digitized"]
-        self.df = pd.DataFrame.from_records(self.read_files_exif_data(self.get_files()), columns=columns)
+        self.df = pd.DataFrame.from_records(data, columns=columns)
         print(self.df.head())
-        return 
+        return self.df
     
-    def save_excell_file(self, excell_filename:str):
+    def create_data_table(self, data:list):
+        table_rows =[]
+        
+        # Declaring namedtuple()
+        columns = ["url","file_size","file_name", "parent", "datetime_created","datetime_modified","exif_metadata_make","exif_metadata_model","exif_metadata_datetime_original","exif_metadata_datetime_digitized"]
+        Record = namedtuple('Record', columns)
+        for record in data:
+            table_rows.append(Record(record))
+        return table_rows
+    
+    def save_excell_file(self, excell_filename:str) ->bool:
         """
         :param excell_filename: A valid name of the excell file. If not gived it will use excell_file.xlsx as default value
         :type excell_filename: str 
+        
         """
-            
+           
         excell_filename = pathlib.Path(self.dest_path) / excell_filename
         try:
             self.df.to_excel(excell_filename)
@@ -114,7 +136,7 @@ class Organizer:
             print(error)
             return False
     
-    def save_json_data(self, json_filename :str):
+    def save_json_data(self, json_filename :str) -> bool:
         sys.setrecursionlimit(5000)
         json_filename = pathlib.Path(self.dest_path) / json_filename
         try:
