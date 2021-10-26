@@ -23,12 +23,14 @@ class TestOrganizer():
     def setup(self):
         self.orgz = organizer.Organizer(src_path="/home/urra/projects/pto/tests/data/dated_images/2017/1/1/")
         self.filename = Path("/home/urra/projects/pto/tests/data/dated_images/2017/1/1/20170101_194348.jpg")
+        self.filenames = self.orgz.get_files()
+        self.exif_data = self.orgz.read_files_exif_data(self.filenames)
+
 
     # test using self.organizer down here
 
     def test_scan_folder_tree_to_obtain_filenames_with_filter(self):
-        filenames = self.orgz.get_files()
-        for file in filenames:
+        for file in self.filenames:
             assert file.suffix in self.orgz.extensions and "20170101" in file.name
     
     def test_get_image_exif_metadata(self):
@@ -39,10 +41,13 @@ class TestOrganizer():
         exif_data = self.orgz.get_exif_data(self.filename)
         assert self.orgz.get_exif_attribute(exif_data,"model") == "SM-J500H"
 
-    def test_read_files_exif_data(self):
-        filenames = self.orgz.get_files()
-        exif_data = self.orgz.read_files_exif_data(filenames)
-        assert isinstance(exif_data, list)
+    # def test_read_files_exif_data(self):
+    #     for file in self.exif_data:
+    #         assert file.suffix in self.orgz.extensions and self.orgz.keyword in file.stem == True
+    
+    def test_create_data_frame(self):
+        self.orgz.create_data_frame(self.exif_data)
+
 
 
 if __name__ == '__main__':
