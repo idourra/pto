@@ -32,7 +32,7 @@ def test_is_pathname_valid():
     WHEN the execute method is called
     THEN True if pathname is valid else False
     """
-    assert c.is_pathname_valid("/home/urra") == True
+    assert c.is_pathname_valid("/home/urra/") == True
 
 
 def test_split_folder_to_subfolders():
@@ -97,11 +97,11 @@ def test_fetch_exif_images_by_model():
         assert c.is_exif_model(file,"iPhone 4") == True
 
 
-def test_create_data_table():
+# def test_create_data_table():
     
-    src_path = "/home/urra/projects/pto/tests/data/"
-    dest_path = src_path
-    filename="test_excell_file.xlsx"
-    g = c.ImageExifOrganizer(src_path,dest_path,"test_excell_file.xlsx")
-    assert g.src_path == Path(src_path) and g.dest_path == Path(dest_path) and g.excell_filename == filename 
-    assert g.save_excell_file(filename)
+#     src_path = "/home/urra/projects/pto/tests/data/"
+#     dest_path = src_path
+#     filename="test_excell_file.xlsx"
+#     g = c.ImageExifOrganizer(src_path,dest_path,"test_excell_file.xlsx")
+#     assert g.src_path == Path(src_path) and g.dest_path == Path(dest_path) and g.excell_filename == filename 
+#     assert g.save_excell_file(filename)

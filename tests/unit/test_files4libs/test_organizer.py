@@ -21,34 +21,42 @@ from files4libs import organizer
 
 class TestOrganizer():
     def setup(self):
-        self.orgz = organizer.Organizer(src_path="/home/urra/projects/pto/tests/data/dated_images/2017/1/1/")
-        self.filename = Path("/home/urra/projects/pto/tests/data/dated_images/2017/1/1/20170101_194348.jpg")
-        self.filenames = self.orgz.get_files()
-        self.exif_data = self.orgz.read_files_exif_data(self.filenames)
-
+        self.o = organizer.Organizer(src_path="/home/urra/projects/pto/tests/data", extensions = [".jpg",".JPG"])
+        self.filename = Path("/home/urra/projects/pto/tests/data/E31006098.JPG")
+        self.filenames = self.o.get_files()
 
     # test using self.organizer down here
 
-    def test_scan_folder_tree_to_obtain_filenames_with_filter(self):
-        for file in self.filenames:
-            assert file.suffix in self.orgz.extensions and "20170101" in file.name
-    
-    def test_get_image_exif_metadata(self):
-        exif_data = self.orgz.get_exif_data(self.filename)
-        assert exif_data.get("make") == "samsung" and exif_data.get("model") == "SM-J500H" and exif_data.get("datetime_original") == "2017:01:01 19:43:48"
-    
+    def test_get_files(self):
+        files = self.o.get_files(keyword="hayd")
+        assert self.o.ok == True
+
+    def test_get_all_files(self):
+        files = self.o.get_all_files()
+        assert self.o.ok == True
+
+    def test_get_exif_data(self):
+        """
+        returns the exif metadata of an image file    
+        """
+        exif_data = self.o.get_exif_data(self.filename)
+        assert exif_data.get("model") == "E3100" and exif_data.get("make") == "NIKON"
+        assert self.o.ok == True
+
     def test_get_exif_attribute(self):
-        exif_data = self.orgz.get_exif_data(self.filename)
-        assert self.orgz.get_exif_attribute(exif_data,"model") == "SM-J500H"
-
-    # def test_read_files_exif_data(self):
-    #     for file in self.exif_data:
-    #         assert file.suffix in self.orgz.extensions and self.orgz.keyword in file.stem == True
+        assert self.o.get_exif_attribute(self.o.get_exif_data(self.filename), tag="model") == "E3100"
+        assert self.o.ok == True
     
-    def test_create_data_frame(self):
-        self.orgz.create_data_frame(self.exif_data)
+    def test_read_files_exif_data(self):
+        # :param: files:list
+        exif_files_data = self.o.read_files_exif_data(self.filenames)
+        for file in exif_files_data:
+            assert "make" in file.keys() == True
+        assert self.o.ok == True
+    
+
+    
 
 
-
-if __name__ == '__main__':
-    pytest.main()
+# if __name__ == '__main__':
+#     pytest.main()
