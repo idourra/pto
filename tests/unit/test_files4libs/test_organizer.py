@@ -1,4 +1,5 @@
 
+from datetime import datetime
 import pytest
 from pathlib import Path
 from files4libs import organizer
@@ -55,8 +56,13 @@ class TestOrganizer():
         assert self.o.ok == True
     
 
-    
+class TestCollection():
+    def setup(self):
+        self.c = organizer.Collection("/home/urra/projects/pto/tests/data","bnjm")
 
+    def test_create_calendar_folder(self):
+        self.c.create_calendar_folder(self.c.name,datetime(2021,10,28))
+        assert Path.joinpath(self.c.name,"2021/10/28").exists() == True
 
 # if __name__ == '__main__':
 #     pytest.main()

@@ -190,8 +190,36 @@ class Organizer:
             return False
 
 class Collection():
-    def __init__(self, name : str, path : str):
-        self.path = pathlib.Path(path)
+    """A user-created :class:`Collection <Collection>` object.
+    Used to manage the .
+    The term "collection" can be applied to any aggregation of physical or digital items. 
+    Those items may be of any type, so examples might include aggregations of natural objects, 
+    created objects, "born-digital" items, digital surrogates of physical items, 
+    and the catalogues of such collections (as aggregations of metadata records). 
+    The criteria for aggregation may vary: e.g. by location, by type or form of the items, 
+    by provenance of the items, by source or ownership, and so on. 
+    Collections may contain any number of items and may have varying levels of permanence.
+    Source: http://www.ukoln.ac.uk/metadata/dcmi/collection-application-profile/
+    :param dest_path: Destination path where the collection will be created.
+    :param name: Name of the collection.
+
+    Usage::
+      >>> import collections
+      >>> coll = collections.Collection('GET', 'https://httpbin.org/get')
+      >>> req.prepare()
+      <PreparedRequest [GET]>
+    """
+
+
+
+    def __init__(self, dest_path : None, name : None ):
+
+        # Default empty variables.
+        dest_path = Path().cwd() if dest_path is None else dest_path
+        name = "collection" if name is None else name
+
+        self.dest_path = dest_path
+        self.name = Path(dest_path) / name
 
     def __getattr__(self, attr):
         return getattr(self.path, attr)
