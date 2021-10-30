@@ -10,6 +10,7 @@ import time
 from pathlib import Path
 import pathlib
 import sys
+import json
 from typing import Optional
 import pandas as pd
 from collections import namedtuple
@@ -33,21 +34,23 @@ class Organizer:
     :param keyword: A keyword to filter the files by its name. Default ""
     :type keyword: str
     """
-    def __init__(self, src_path="", dest_path="", extensions = [".jpg", ".jpeg", ".JPG", ".JPEG"], keyword= ""):
-        if src_path == "":
-            self.src_path = Path().cwd()
-        else: 
-            self.src_path = Path(src_path)
+    def __init__(self, src_path= None, dest_path= None, extensions = None, keyword= None):
+        
+        # Default empty variables.
+        src_path = Path().cwd() if src_path is None else src_path
+        dest_path = Path().cwd() if dest_path is None else dest_path
+        extensions = [".jpg", ".jpeg", ".JPG", ".JPEG"] if extensions is None else extensions
+        keyword = "" if keyword is None else keyword
 
-        if dest_path == "":
-            self.dest_path = self.src_path
-        else:
-            self.dest_path = Path(dest_path)
-
+        self.src_path = src_path
+        self.dest_path = dest_path
         self.extensions = extensions
         self.keyword = keyword
         self.df = pd.DataFrame()
         self.ok = True
+
+        
+
 
     def get_files(self, extensions = None, keyword = None) ->list:
         """
@@ -190,6 +193,8 @@ class Organizer:
             return False
 
 class Collection():
+
+
     """A user-created :class:`Collection <Collection>` object.
     Used to manage the .
     The term "collection" can be applied to any aggregation of physical or digital items. 
@@ -217,8 +222,9 @@ class Collection():
         # Default empty variables.
         dest_path = Path().cwd() if dest_path is None else dest_path
         name = "collection" if name is None else name
+        
 
-        self.dest_path = dest_path
+        self.dest_path = Path(dest_path)
         self.name = Path(dest_path) / name
 
     def __getattr__(self, attr):
@@ -283,3 +289,60 @@ class Collection():
                     print(error)
                     return False
         return True
+
+    def create_cabinet_folder(self, dest_path = None, q_drawers = None, drawer_tags = None)-> bool:
+        """
+        creates a folder structure whith q_drawers folders
+
+        :param dest_path: The path where the excell table willl be created
+        :type dest_path: str
+
+        :param q_drawers: The number of drawers of the cabinet
+        :type q_drawers: int
+
+        :param drawer_tags: a dict **{drawer_number:int, drawer_tag:str}
+        :type drawer_tags: list(str)
+        """
+        dest_path = self.dest_path if dest_path is None else Path(dest_path)
+        q_drawers = 0 if q_drawers is None else q_drawers
+        drawer_tags = {} if drawer_tags is None else drawer_tags
+
+        if not isinstance(drawer_tags, dict):
+            print(f"drawer_tags must be a dictionary with number of every drawer and the tag of each one")
+            return False
+
+
+        if not dest_path.exists():
+            try:
+                dest_path.mkdir(parents=True, exist_ok=True)
+                print(dest_path)
+            except(Exception) as error:
+                print(error)
+
+        
+        for i in range(q_drawers):
+            drawer_path = Path.joinpath(dest_path, str(i+1))
+            if not  drawer_path.exists():
+                # create folder
+                try:
+                     drawer_path.mkdir(parents=True, exist_ok=True)
+                except(Exception) as error:
+                    print(error)
+                    return False
+        try:
+            with open(dest_path.joinpath(dest_path,"tags.json"),"w") as fout:
+                json.dump(drawer_tags, fout)
+                print(f"tags for the drawers of the cabinet saved as tags.json")
+        except(Exception) as error:
+            print(error)
+        
+        return True
+
+
+      
+        
+
+    
+
+
+
