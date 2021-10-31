@@ -85,14 +85,8 @@ class Card ( Drawer , Cabinet ):
         self.image_name = self.id + ".jpg"
         self.image_name = Path(catalog_src_path) / self.image_name[:15] / "images" /self.image_name
 
-        #card_image uri
-        self.image_uri = self.image_name.as_uri()
-
-        # card_image text
-        self.image_ocr_text = self.id + ".txt"
-        self.image_ocr_text = Path(catalog_src_path) / self.id[:15] / self.image_ocr_text
-
-        #card_image_ocr_text uri
-        self.image_ocr_text_uri = self.image_ocr_text.as_uri()
+        # card_image_ocr_text_filename
+        self.image_ocr_text_filename = self.id + ".txt"
+        self.image_ocr_text_filename = Path(catalog_src_path) / self.id[:15] / self.image_ocr_text_filename
 
  
