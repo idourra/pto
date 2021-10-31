@@ -66,6 +66,9 @@ class Card ( Drawer , Cabinet ):
 
         self.id =id_card
         
+        #catalog source path
+        self.catalog_src_path = catalog_src_path
+
         #if condition returns False, AssertionError is raised:
         # id_card identifies it uniquelly in the context of a catalog 
 
