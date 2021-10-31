@@ -89,4 +89,12 @@ class Card ( Drawer , Cabinet ):
         self.image_ocr_text_filename = self.id + ".txt"
         self.image_ocr_text_filename = Path(catalog_src_path) / self.id[:15] / self.image_ocr_text_filename
 
- 
+    @property
+    def ocr_text(self):
+        try:
+            with open(self.image_ocr_text_filename,"r", encoding="utf-8") as f:
+                ocr_text = f.read()
+                return ocr_text
+        except(Exception) as error:
+            print(error)
+            return str(error)
