@@ -3,9 +3,10 @@
 Python package to create and manage card images public access catalogs
 """
 from pathlib import Path
+import requests
+from urllib.parse import urlunparse
 
-
-class Cabinet():
+class Catalog():
     pass
 
 class Drawer():
@@ -31,7 +32,7 @@ class Drawer():
 
 
         #drawer path 
-        self.path =  Path(catalog_src_path) / self.id
+        self.path =  Path(catalog_src_path) / self.id[:12] / self.id
     
         #drawer_path_uri
         self.path_uri = self.path.as_uri()
@@ -41,8 +42,13 @@ class Drawer():
         # number of cards inside a drawer
         cards_path = Path(self.path) / "images"
         return len(list(cards_path.glob('*.jpg')))
+    
+    def get_card(self, card_position: int):
+        card_id = self.id + str(card_position).zfill(4)
+        return Card(card_id,".")
+    
 
-class Card ( Drawer , Cabinet ):
+class Card ( Drawer , Catalog ):
     def __init__(self , id_card : str, catalog_src_path : str):
         """ 
         Instancia un objeto Card que contiene los datos que permiten manipular cada Card de un catalogo
@@ -67,7 +73,7 @@ class Card ( Drawer , Cabinet ):
         self.id =id_card
         
         #catalog source path
-        self.catalog_src_path = catalog_src_path
+        self.catalog_src_path = Path(catalog_src_path)
 
         #if condition returns False, AssertionError is raised:
         # id_card identifies it uniquelly in the context of a catalog 
@@ -81,16 +87,23 @@ class Card ( Drawer , Cabinet ):
         #drawer number
         self.drawer = int(id_card[12:15])
 
+        # catalog
+        self.catalog = self.id[:12]
+
         #card position inside the drawer
         self.position = int(id_card[15:19])
 
-        #card_image name
+        #card paths 
+        self.image_path = "/" + self.id[:12] + "/" + self.id[:15] + "/images/" + self.id + ".jpg"
+        self.ocr_path =  "/" + self.id[:12] + "/" + self.id[:15] + "/" + self.id + ".txt"
+
+        #card image file name
         self.image_name = self.id + ".jpg"
-        self.image_name = Path(catalog_src_path) / self.image_name[:15] / "images" /self.image_name
+        self.image_name = Path(catalog_src_path) /self.id[:12] / self.id[:15] / "images" / self.image_name
 
         # card_image_ocr_text_filename
         self.image_ocr_text_filename = self.id + ".txt"
-        self.image_ocr_text_filename = Path(catalog_src_path) / self.id[:15] / self.image_ocr_text_filename
+        self.image_ocr_text_filename = Path(catalog_src_path) / self.id[:12] / self.id[:15] / self.image_ocr_text_filename
 
     @property
     def ocr_text(self):
@@ -101,3 +114,17 @@ class Card ( Drawer , Cabinet ):
         except(Exception) as error:
             print(error)
             return str(error)
+
+    def get_url(self, scheme: str, netloc : str, path: str):
+        return urlunparse([scheme, netloc, path,"","",""])
+
+    def get_remote(self, scheme: str, netloc : str, path: str):
+        url = urlunparse([scheme, netloc,path,"","",""])
+        try:
+            r = requests.get(url)
+            r.encoding = "utf-8"
+            return r
+        except(Exception) as error:
+            print(error)
+            return 
+

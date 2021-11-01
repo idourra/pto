@@ -57,3 +57,7 @@ class TestCard():
 
     def test_card_image_ocr_text(self):
         assert "Habana" in self.card.ocr_text
+    
+class TestDrawer():
+    def setup(self):
+        self.drawer = cipac.Drawer(id_card = "bihcarccarco002",catalog_src_path="/home/urra/projects/pto/tests/data/bdc/ihc/catalogos/bihcarccarco")
