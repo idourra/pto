@@ -1,0 +1,185 @@
+commit 5d63da9504e0fda5e83f865509618942432dcc91
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Sun Oct 31 13:51:00 2021 -0400
+
+    class Card  ocr_text as property
+
+commit dae70e9db7b5c81d7ed746cbc855184a37cc6e91
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Sun Oct 31 13:42:14 2021 -0400
+
+    Card class ocr_text reading method added
+
+commit 62012a8c0eff06d04041bce99ba652f9935f1015
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Sun Oct 31 12:51:08 2021 -0400
+
+    first version of cipac with unit tests
+
+commit bb38a2987b26e871e79cef86117b4b539e68d774
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Sat Oct 30 12:31:00 2021 -0400
+
+    package cipac added and classes Card, Drawer and Cabinet added
+
+commit 6aac17507d2e9b7e0c5e6dcddef4e4d8529c3d4d
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Fri Oct 29 17:31:46 2021 -0400
+
+    class Collection added
+
+commit 9cb0a1089388ecc186c4c048f35d792701a5f827
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Wed Oct 27 23:11:57 2021 -0400
+
+    class collection created and methods create calendar folder and create alphabet folder
+
+commit 7aa871f623201b9d2714b07316a331c0af91dab6
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Mon Oct 25 22:06:28 2021 -0400
+
+    test_organizer last changes
+
+commit 45bf0059bae57d1239c1fb3b403228222731ec8c
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Mon Oct 25 18:13:14 2021 -0400
+
+    test_read_files_exif_data
+
+commit cf77e0e64f7b3d511b254b3e855acc1d01566af7
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Mon Oct 25 18:03:55 2021 -0400
+
+    test_image_exif_attribute
+
+commit 5ca136440c8a981dab0d070f98692ca20b3d9539
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Mon Oct 25 17:47:07 2021 -0400
+
+    test_image_exif_metadata
+
+commit e67d6ab5da1c43ce6278446962c53938b6868f83
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Mon Oct 25 15:55:55 2021 -0400
+
+    tests/unit/test_files4libs/test_organizer.py created
+
+commit 57f44bc1c592bed258cb55468d9df099ae1e1533
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Mon Oct 25 13:51:36 2021 -0400
+
+    files for distribution in pypi generated
+
+commit 3b757793ead85bfc698fbf752b2fe6720e59f681
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Mon Oct 25 00:25:17 2021 -0400
+
+    minimum exif metadata if get_all return an error
+
+commit f6d76e338a6dd147833220c7e9582df6a393bd0c
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Sun Oct 24 21:04:46 2021 -0400
+
+    package for distribution created
+
+commit 15cb36f64a2dd287d92deb9b589b81e024666592
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Sun Oct 24 14:12:32 2021 -0400
+
+    readme.md modified
+
+commit 6a781ed0b0aa3f0dfdf74ec260b6575295dd2d2d
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Sun Oct 24 12:42:56 2021 -0400
+
+    branch cleaned and git .gitignore update
+
+commit 1e30a079309bf6425dc9038b36f2d28180c77fb9
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Sun Oct 24 12:18:36 2021 -0400
+
+    gitignore modified with reccomendation gitignore.io
+
+commit 37559146666fc62ffbd1ac002dda903e30d68068
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Sun Oct 24 11:22:22 2021 -0400
+
+    refactored version with class Organizer and file structure modified to the PyPi structure
+
+commit 248a8a02627321dd944b44688974060f7839b9e9
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Fri Oct 22 14:41:09 2021 -0400
+
+    create_data_table tested
+
+commit c0465f17648d27e04c1e6d83186378008f986589
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Wed Oct 20 09:46:54 2021 -0400
+
+    working version prior to the use of src_path inside functions
+
+commit ef249900ac9e08f052cc957672da4a35be7340ba
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Tue Oct 19 17:06:51 2021 -0400
+
+    exif get attribute added
+
+commit 86c1c7eb539e51141db9e574f6e7d730f47fd78c
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Mon Oct 18 16:37:52 2021 -0400
+
+    extract exif make model included
+
+commit 7880f7efafba6e287786d18c3866e526e6f6a02b
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Mon Oct 18 13:58:00 2021 -0400
+
+    keyword filter for read files included
+
+commit e1842e8bec5c96fcf859f2989426fa9e2d6f7c82
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Wed Oct 13 17:01:02 2021 -0400
+
+    test create alphabet OK and test split folder in subfolders OK
+
+commit ed9ad8b3a1bef19e9102c44331a497504f4a73d6
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Tue Oct 12 18:54:12 2021 -0400
+
+    create alphabet simple folder structure ok
+
+commit 1f3c16d95ab2536dbb83c43827618cf9bd5ceed3
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Tue Oct 5 16:41:57 2021 -0400
+
+    gitignore modified with https://github.com/github/gitignore/blob/master/Python.gitignore
+
+commit 7e86808728daee4e7a594a976ff70b4682d2b735
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Tue Oct 5 12:55:36 2021 -0400
+
+    README.md improved
+
+commit 35906684f11da47b41d86c4e6ca084e2507c0565
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Tue Oct 5 12:32:16 2021 -0400
+
+    commands package funtioning
+
+commit b175aefb66863fe33c2535a68f31b10a07780083
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Tue Oct 5 12:14:27 2021 -0400
+
+    unit tests of the main functions
+
+commit 2bbb733c20e8f4cfd727f1fba7d1da033bee8552
+Author: idourra <54194983+idourra@users.noreply.github.com>
+Date:   Mon Oct 4 12:02:16 2021 -0400
+
+    Update README.md
+
+commit b29312dfbf169be7d06ce801d83e2f9edc318869
+Author: Pedro Urra <urrape@gmail.com>
+Date:   Mon Oct 4 11:59:12 2021 -0400
+
+    first commit
