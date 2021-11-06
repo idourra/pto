@@ -1,0 +1,16 @@
+{% extends "base_template.html" %} {% block title %} {{catalog.id}} {% endblock %} {% block content %}
+
+<div id="cipac_card_area" class="container">
+    <div class="row">
+        <div id="cipac_left_area" class="col">
+            <img src={{card.url_image.geturl()}} class="rounded float-start" alt={{card.ocr_text}}}>
+            <a href={{card.coordinates.get( "previous" )}} class="card-link ">Catalog</a>
+            <a href="# " class="card-link ">Another link</a>
+        </div>
+        <div id="cipac_right_area " class="col ">
+            {{card.ocr_text}}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

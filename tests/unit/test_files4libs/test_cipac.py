@@ -22,42 +22,41 @@ from files4libs import cipac
 
 class TestCard():
     def setup(self):
-        self.card = cipac.Card(id_card = "bihcarccarco0020009",catalog_src_path="/home/urra/projects/pto/tests/data/bdc/ihc/catalogos/bihcarccarco")
+        self.card = cipac.Card("bnjmsculyfof0010001","http://bnjm.sld.cu/bnjmsculyfof","/home/urra/tests/bnjmsculyfof")
 
     # test using self.card down here
 
     def test_card_id(self):
-        assert self.card.id == "bihcarccarco0020009"
+        assert self.card.id == "bnjmsculyfof0010001"
+
+    def test_image_name(self):
+        assert self.card.image_name == "/bnjmsculyfof/bnjmsculyfof001/images/bnjmsculyfof0010001.jpg"
+
+    def test_catalog(self):
+        assert self.card.catalog.q_drawers == 23
     
-    def test_card_pattern(self):
-        assert self.card.pattern == "bihcarccarco"
-    
-    def test_card_drawer(self):
-        assert self.card.drawer == 2
+    def test_drawer(self):
+        assert self.card.drawer.q_cards == 936
 
     def test_card_position(self):
-        #card position inside the drawer
-        self.card.position = 9
+        assert self.card.position == 1
+
+    def test_card_drawer(self):
+        assert self.card.drawer == 1
 
     def test_card_image_name(self):
         assert self.card.image_name.stem  == 'bihcarccarco0020009'
           
-    def test_card_image_name_uri(self):
-        assert self.card.image_name.as_uri()
-        #assert self.card.image_name_uri == 'file:///home/urra/projects/pto/tests/data/bdc/ihc/catalogos/bihcarccarco/bihcarccarco002/images/bihcarccarco0020009.jpg'
-
     def test_card_image_ocr_filenamename(self):
         assert self.card.image_ocr_text_filename.suffix == ".txt"
 
-    def test_card_image_ocr_text_uri(self):
-         assert self.card.image_ocr_text_filename.as_uri()
+    def test_card_url_ocr(self):
+         assert self.card.url_ocr.geturl() == 'http://bnjm.sld.cu/bnjmsculyfof/bnjmsculyfof001/bnjmsculyfof0010001.txt'
     
-    def test_card_image_parent_path(self):
-        assert self.card.image_name.parent.stem == "images"
-
     def test_card_image_ocr_text(self):
-        assert "Habana" in self.card.ocr_text
+        assert "patriotismo" in self.card.ocr_text
+
     
 class TestDrawer():
     def setup(self):
-        self.drawer = cipac.Drawer(id_card = "bihcarccarco002",catalog_src_path="/home/urra/projects/pto/tests/data/bdc/ihc/catalogos/bihcarccarco")
+        self.drawer = cipac.Drawer(card_id = "bihcarccarco002",catalog_src_path="/home/urra/projects/pto/tests/data/bdc/ihc/catalogos/bihcarccarco")

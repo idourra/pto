@@ -1,0 +1,8 @@
+{% extends "base_template.html" %} {% block title %} {{catalog.id}}{% endblock %} {% block content %}
+<section id="cipac_catalog_about" class="container">
+    <h1>
+        The {{catalog.id}} Catalog has {{catalog.q_cards}} cards in {{catalog.q_drawers}} drawers"
+    </h1>
+</section>
+
+{% endblock %}

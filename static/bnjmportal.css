@@ -1,0 +1,334 @@
+/* general */
+body{
+    font-family: Calibri;
+    line-height: 1.428571429;
+}
+.articule {
+    /*padding-left: 4%;*/
+    /*border: 1px solid blue;*/
+}
+.page-header {
+    padding-bottom: 9px;
+    margin: 10px 0 20px;
+    border-bottom: 1px solid #EEE;
+}
+
+.nav-pills > li.active > a,
+.nav-pills > li.active > a:hover,
+.nav-pills > li.active > a:focus {
+    color: #000000;
+    /*background-color: #24588b !important;*/
+    border-bottom: 1px solid #000000;
+    border-radius: 0px;
+    font-size: 14pt;
+}
+
+.nav > li > a {
+    position: relative;
+    display: block;
+    padding: 4px 15px;
+}
+.active-page {
+    background-color: #EEEEEE;
+    border-radius: 4px;
+}
+
+/* menu */
+@media (max-width: 767px) {
+    .navbar-nav .open .dropdown-menu {
+        background-color: #24588b;
+    }
+}
+#menu .nav > li {
+    border-right: 1px solid gray;
+    height: 20px;
+    margin: 0 0 20px 0;
+}
+#menu .nav > li.border-none{
+    border: none;
+}
+.navbar-nav > li > a {
+    padding: 0 14px;
+}
+.dropdown:hover .dropdown-menu {
+    display: block;
+    z-index: -1000;
+}
+.dropdown:hover .active_menu {
+    display: block;
+}
+.navbar-default .navbar-nav > li > a {
+    color: #575756;
+    font-weight: bold;
+    font-size: 14px;
+    text-shadow: 1px 1px 0px #cccccc ;
+    padding-bottom: 20px;
+
+}
+.navbar-default .navbar-nav > li > a:hover{
+    text-decoration: underline;
+}
+.nav .open > a, .nav .open > a:hover, .nav .open > a:focus {
+    background-color: #ffffff !important;
+}
+.navbar {
+	margin-bottom: 0px;
+	min-height: 0px;
+}
+.navbar-default {
+	background-color: transparent;
+	border-color: transparent;
+	padding-bottom: 0 !important;
+}
+.dropdown-menu{
+	background-color: #24588b;
+    -moz-box-shadow: inset 0px 3px 27px -4px #000000;
+    -webkit-box-shadow: inset 0px 3px 27px -4px #000000;
+    box-shadow: inset 0px 3px 27px -4px #000000;
+    z-index: -1000;
+}
+
+.dropdown-menu a{
+    display: block;
+    clear: both;
+    font-weight: normal;
+    line-height: 1.428571429;
+    color: #fed899;
+    white-space: normal;
+    font-size: 14px;
+}
+
+.dropdown-large {
+	position: static !important;
+	border-right: 1px solid #eeeeee;
+}
+.dropdown-menu-large {
+	/*margin-left: 16px;*/
+	margin-right: 16px;
+	padding: 20px 0px;
+}
+.dropdown-menu-large > li > ul {
+	padding: 0;
+	margin: 0;
+}
+.dropdown-menu-large > li > ul > li {
+	list-style: none;
+
+}
+.dropdown-menu-large > li > ul > li > a  {
+	display: block;
+	padding: 3px 20px;
+	clear: both;
+	font-weight: normal;
+	line-height: 1.428571429;
+	color: #fed899;
+	white-space: normal;
+    font-size: 14px;
+}
+.dropdown-menu-large  p  {
+	color: #fed899;
+}
+.dropdown-menu-large > li ul > li > a:hover,
+.dropdown-menu-large > li ul > li > a:focus {
+	text-decoration: none;
+	color: #262626;
+	background-color: #f5f5f5;
+}
+
+/*.dropdown-menu-large > li ul > li > a:link {*/
+    /*text-decoration: none;*/
+    /*color: #fed899;*/
+    /*background-color: #f5f5f5;*/
+/*}*/
+
+.dropdown-menu-large .disabled > a,
+.dropdown-menu-large .disabled > a:hover,
+.dropdown-menu-large .disabled > a:focus {
+	/*color: #999999;*/
+}
+.dropdown-menu-large .disabled > a:hover,
+.dropdown-menu-large .disabled > a:focus {
+	text-decoration: none;
+	background-color: transparent;
+	background-image: none;
+	filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+	cursor: not-allowed;
+}
+.dropdown-menu-large .dropdown-header {
+	color: #fed899;
+	font-size: 18px;
+}
+@media (max-width: 768px) {
+	.dropdown-menu-large {
+		margin-left: 0 ;
+		margin-right: 0 ;
+	}
+	.dropdown-menu-large > li {
+		margin-bottom: 30px;
+	}
+	.dropdown-menu-large > li:last-child {
+		margin-bottom: 0;
+	}
+	.dropdown-menu-large .dropdown-header {
+		padding: 3px 15px !important;
+	}
+}
+
+#container {
+    margin-bottom: 1%;
+}
+/*.navbar {*/
+    /*margin-bottom: 0px;*/
+    /*min-height: 0px;*/
+/*}*/
+/*.navbar-default {*/
+    /*background-color: transparent;*/
+    /*border-color: transparent;*/
+    /*padding-bottom: 0 !important;*/
+/*}*/
+
+/* footer */
+.list-unstyled li a {
+    color: #FFF;
+}
+.list-unstyled li {
+    margin-bottom: 10px;
+}
+/* footer */
+blockquote{
+    color: #fed899; 
+}
+.carousel-caption {
+    right: 40%;
+    left: 0%;
+    top: 50%;
+    padding-bottom: 30px;
+}
+.carousel-caption h3 {
+    background-color: #24588b;
+    color: #fed899;
+}
+.active_menu {
+    background: url("../images/vinneta.png") no-repeat;
+    /*background-color: red;*/
+    width: 19px;
+    height: 15px;
+    margin: 0 auto;
+    z-index: -1000;
+    display: none;
+}
+.background-blue {
+    background: #263959;
+}
+.background-gray {
+    background: #575756;
+}
+.social-menu li{
+    margin-bottom: 20px;    
+}
+.social-menu{
+    width: 60%;
+    margin-top: 20px;
+}
+
+.btn-hover {
+    font-weight: normal;
+    color: #333333;
+    cursor: pointer;
+    background-color: inherit;
+    border-color: transparent;
+}
+
+.btn-hover-alt {
+    font-weight: normal;
+    color: #ffffff;
+    cursor: pointer;
+    background-color: inherit;
+    border-color: transparent;
+}
+.back-to-top {
+    cursor: pointer;
+    position: fixed;
+    bottom: 30px;
+    right:30px;
+    display:none;}
+
+
+/*para el carrusel del "plan estrategico de la bnjm" jssor slider bullet navigator skin 01 css */
+/*
+.jssorb01 div           (normal)
+.jssorb01 div:hover     (normal mouseover)
+.jssorb01 .av           (active)
+.jssorb01 .av:hover     (active mouseover)
+.jssorb01 .dn           (mousedown)
+*/
+
+/*jssorb01 son los cuadritos */
+.jssorb01 {
+    position: absolute;
+}
+.jssorb01 div, .jssorb01 div:hover, .jssorb01 .av {
+    position: absolute;
+    /* size of bullet elment */
+    width: 12px;
+    height: 12px;
+    filter: alpha(opacity=70);
+    opacity: .7;
+    overflow: hidden;
+    cursor: pointer;
+    border: #000 1px solid;
+}
+.jssorb01 div { background-color: gray; }
+.jssorb01 div:hover, .jssorb01 .av:hover { background-color: #d3d3d3; }
+.jssorb01 .av { background-color: #fff; }
+.jssorb01 .dn, .jssorb01 .dn:hover { background-color: #555555; }
+
+/* jssor slider arrow navigator skin 05 css (flechitas a los lados) */
+/*
+.jssora05l                  (normal)
+.jssora05r                  (normal)
+.jssora05l:hover            (normal mouseover)
+.jssora05r:hover            (normal mouseover)
+.jssora05l.jssora05ldn      (mousedown)
+.jssora05r.jssora05rdn      (mousedown)
+*/
+.jssora05l, .jssora05r {
+    display: block;
+    position: absolute;
+    /* size of arrow element */
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    background: url('../images/plan-estrategico/a17.png') no-repeat;
+    overflow: hidden;
+}
+.jssora05l { background-position: -10px -40px; }
+.jssora05r { background-position: -70px -40px; }
+.jssora05l:hover { background-position: -130px -40px; }
+.jssora05r:hover { background-position: -190px -40px; }
+.jssora05l.jssora05ldn { background-position: -250px -40px; }
+.jssora05r.jssora05rdn { background-position: -310px -40px; }
+
+/* jssor slider thumbnail navigator skin 09 css (carteles)*/
+
+.jssort09-600-45 .p {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 600px;
+    height: 45px;
+}
+
+.jssort09-600-45 .t {
+    font-family: verdana;
+    font-weight: normal;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    color:#fff;
+    line-height: 45px;
+    font-size: 20px;
+    padding-left: 10px;
+}

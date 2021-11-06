@@ -1,0 +1,185 @@
+/* Universal Selectors */
+
+
+/* Element Selectors */
+
+
+/* Formula para calcular proporciones y expresar en em target ÷ context = result
+/*So with our formula in hand, let’s turn back to that 24px headline. Assuming that our base font-size: 100% on the body element equates to 16px, we can plug those values directly into our formula. So if we need to express our h1’s target font size (24px) relative to its context (16px), we get:
+/*24 ÷ 16 = 1.5
+/*And there we are: 24px is 1.5 times greater than 16px, so our font-size is 1.5em:
+/*h1 {
+/*font-size: 1.5em; /* 24px / 16px */
+
+
+/*font-style: italic;
+/*font-weight: normal;
+/*}*/
+
+body {
+    margin: 5px;
+    background-color: #F0F0F0;
+    color: #111;
+    font-family: "canada-type-gibson", sans-serif;
+    font-weight: 400;
+}
+
+article {
+    background-color: #eee;
+    display: block;
+    margin: 5px;
+    padding: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+article header {
+    /* background-color:#FF9966;
+color:#FFFFFF; */
+    background-color: rgb(187, 67, 8);
+    color: #FFFFFF;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    padding: 1px;
+}
+
+article footer {
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+article h1 {
+    font-size: 1.125em;
+}
+
+aside {
+    display: block;
+    width: 25%;
+    float: left;
+}
+
+aside h3 {
+    margin: 15px;
+    color: white;
+}
+
+aside p {
+    margin: 15px;
+    color: white;
+    font-weight: bold;
+    font-style: italic;
+}
+
+header {
+    clear: both;
+    display: block;
+    text-align: center;
+    padding: 2px;
+}
+
+footer {
+    clear: both;
+    text-align: center;
+    padding: 5px;
+}
+
+
+/* classes */
+
+.max-width-95-height-auto {
+    max-width: 95%;
+    height: auto;
+}
+
+
+/* links */
+
+a {
+    color: navy;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+em {
+    font-weight: bold;
+    text-decoration: none;
+}
+
+
+/* Class, Attribute, and Pseudo Selectors */
+
+
+/* ID Selectors */
+
+#cipacRecord a {
+    color: #29629E;
+}
+
+#cipacMenuGavetas a {
+    border-right: 1px solid;
+    border-radius: 8px;
+    padding: 3px;
+    margin: 2px;
+}
+
+#cipacImagenFicha {
+    padding: 10px
+}
+
+#cipacTextoFicha {
+    margin: 5px;
+    padding: 5px;
+}
+
+#cipacEdit {
+    padding: 1px;
+    float: left;
+    font-size: larger;
+}
+
+#cipacBarrasInicioFinal a {
+    text-align: center;
+    font-size: small;
+    padding: 5px;
+}
+
+#cipacRecordList {
+    text-indent: 0;
+    font-size: larger;
+}
+
+#cipacRecord {
+    text-indent: inherit;
+    font-size: larger;
+}
+
+#enlacearegistros a {
+    font-size: smaller;
+    float: left;
+}
+
+#cuerporegistro em {
+    background-color: #FFFF00;
+}
+
+#consecutivo em {
+    font-weight: bolder;
+}
+
+
+/* !important Universal Selectors */
+
+
+/* !important Element Selectors */
+
+
+/* !important Class, Attribute, and Pseudo Selectors */
+
+
+/* !important ID Selectors */

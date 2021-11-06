@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    {% if not indice %}
+    <title id="cipacTitlePage">{{ficha.titleInstitution | safe}}. Cat&aacutelogo de {{ficha.config['idCatalogos'][ficha.idCatalogo]}}. {{ficha.ocr[0,100] | striptags}}</title>
+    {% else %} {% if cadbusca == "*:*" %}
+    <title>{{ficha.titleInstitution}}. Cat&aacutelogo de {{ficha.config['idCatalogos'][ficha.idCatalogo]}}</title>
+    {% else %}
+    <title>{{ficha.titleInstitution}}. Cat&aacutelogo de {{ficha.config['idCatalogos'][ficha.idCatalogo]}}. {{cadbusca.upper()}}
+    </title>
+    {% endif %} {% endif %}
+    <link rel="shortcut icon" href="/img/{{ficha.siglaI}}.ico" />
+
+
+    <meta name="Keywords" content='{{keywords}}' />
+    <meta name="Description" content='{{ficha.ocr[0,50] |striptags}}' />
+    <meta content=content='{{ficha.ocr[0,50] |striptags}}' property="schema:description">
+    <meta content="website" property="schema:type">
+    <meta property="http://purl.org/dc/elements/1.1/dc:title" content='{{ficha.ocr[0,50] |striptags}}' />
+    <meta property="http://purl.org/dc/elements/1.1/dc:creator" content='{{ficha.titleInstitution}}'>
+    <meta content='{{ficha.ocr[0,50]|striptags}}' property="twitter:description">
+
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" type="text/css" href="../css/cipac.css" />
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap-responsive.css" />
+    <link rel="stylesheet" href="../css/carousel.css">
+    <!-- <script type="text/javascript" src="../js/dpla-search-widget.js"></script> -->
+</head>
+
+<body id="cipac">
+    <div id="cipacPage" class="container">
+
+
+        <div id="pruebas">
+
+            <!-- <h1>Pruebas con Javascript y JQuery</h1> -->
+            <!-- 			<div id="msgid">
+			</div> -->
+
+        </div>
+
+        {% block cipacPage %}
+        <div class="container">
+            <!-- begin section id = "cipacMenu" -->
+            <section id="cipacMenu" class="container">
+
+                {% block cipacMenu %}
+                <!-- begin del menu principal -->
+                <nav class="navbar navbar-default">
+                    <div class="container">
+                        <!-- Brand and toggle get grouped for better mobile display -->
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+								<span class="sr-only">Toggle navigation</span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+							</button>
+                            <a class="navbar-brand" href="../cgi-bin/item.py?idficha={{ficha.idCatalogo}}0010001">
+                                <img alt={{ficha.titleInstitution}} src="../img/{{ficha.siglaI}}.ico">
+                            </a>
+                        </div>
+
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                            <ul class="nav navbar-nav">
+
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Cat&aacutelogos <span
+											class="caret"></span></a>
+                                    <ul class="dropdown-menu">
+                                        {% for institucion in ficha.config["instituciones"] %}
+                                        <li role="separator" class="divider"></li>
+                                        <li class="dropdown-header">{{institucion["titleInstitucion"]}}</li>
+                                        <li role="separator" class="divider"></li>
+                                        {% for sala in institucion["salas"] %}
+                                        <li class="dropdown-header">{{sala["titleSala"]}}</li>
+                                        {%for catalogo in sala["catalogos"] %}
+                                        <li><a href='../cgi-bin/search.py?idficha={{catalogo["idCatalogo"]}}0010001&cadbusca={{cadbusca}}'>{{catalogo["titleCatalogo"]}}</a>
+                                        </li>
+                                        {% endfor %} {% endfor %} {% endfor %}
+                                    </ul>
+                                </li>
+                                <form class="navbar-form navbar-left" onsubmit="return validateForm()" role="search" action="/cgi-bin/search.py" method="PUT">
+                                    <div class="form-group">
+                                        <input id="cipacCadenaBusqueda" type="text" class="form-control" name="cadbusca" placeholder="Palabras en el texto de las fichas" size="45" maxlength="2048" value='{{cadbusca}}' autofocus>
+                                        <input name="idficha" type="hidden" value='{{ficha.idficha}}'>
+                                        <input name="idcatalogo" type="hidden" value='{{ficha.idcatalogo}}'>
+                                        <input name="start" type="hidden" value="0">
+                                        <input name="rows" type="hidden" value="{{rows}}" }>
+                                        <input name="i" type="hidden" value={{ficha.i}}>
+                                        <input name="j" type="hidden" value={{ficha.j}}>
+                                        <input name="sort" type="hidden" value="id asc">
+
+                                    </div>
+                                    <button type="submit" class="btn btn-default">Buscar</button>
+                                </form>
+                                <li>
+                                    <a href='../cgi-bin/item.py?idficha={{ficha.idficha}}'>Navegar</a>
+                                </li>
+
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Acerca de <span
+											class="caret"></span></a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="../info/acerca/proyecto.html">Proyecto de digitalizaci&oacuten de
+												los cat&aacutelogos</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="http://www.ecured.cu/index.php/Biblioteca_Nacional_de_Cuba_Jos%C3%A9_Mart%C3%AD">La
+												Biblioteca Nacional de Cuba</a></li>
+                                        <li><a href="#">La Biblioteca Central de la Universidad de la Habana</a></li>
+                                        <li><a href="#">La Biblioteca del Instituto de Historia de Cuba</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <!-- /.navbar-collapse -->
+                    </div>
+                    <!-- /.container -->
+                </nav>
+                <!-- fin del menu principal -->
+                <!-- Cintillo para pasar anuncios  -->
+                <div id="cipacAlert">
+                    {% if cintillo%}
+                    <div id="cipacAlertCintillo" class="alert alert-warning" role="alert">{{cintillo["cintillo"]}}</div>
+                    <!-- <div class= "well">...</div> -->
+                    {% endif %}
+                </div>
+                <!-- Cintillo para pasar anuncios  -->
+                {% endblock cipacMenu%}
+            </section>
+            <!-- end section id = "cipacMenu" -->
+            <!-- begin section id = "cipacCcontent"-->
+            <section id="cipacContent" class="container">
+                {% block cipacContent %} {% if not carousel %} {% if busqueda %}
+                <!-- begin section id = "cipacSearch"-->
+                <section id="cipacSearch" class="container">
+                    {% block cipacSearch %}
+                    <!-- begin section id = "cipacSearchResults" -->
+                    <section id="cipacSearchResults">
+                        {% if indice %}
+                        <!-- begin estadisticas de los resultados de la busqueda -->
+                        <div id="cipacResultStats">
+                            {% if cadbusca == "*:*" %} Existen <em> {{numFound}} </em> registros con el texto indizado en el Cat&aacutelogo de {{ficha.config['idCatalogos'][ficha.idCatalogo]}}. {{ficha.titleInstitution}} {% else %}
+                            <p> Resultados de b&uacutesqueda </p>
+                            <p>
+                                Su b&uacutesqueda por <em> {{cadbusca}}</em> recuper&oacute {{numFound}} registros en el Cat&aacutelogo de {{ficha.config['idCatalogos'][ficha.idCatalogo]}}. {{ficha.titleInstitution}}
+
+                            </p>
+                            {% endif %}
+                        </div>
+                        <!-- end estadisticas de los resultados de la busqueda -->
+
+                        <!-- begin barra de progreso tipo dial de solr-->
+                        <form class="form-horizontal" role="form" action="/cgi-bin/search.py?" method="GET">
+                            <input id="cipacBarraDialSolr" name="start" type="range" min="0" max="{{numFound -1}}" value="{{start}}" placeholder="{{start}}" />
+                            <input name="cadbusca" type="hidden" value='{{cadbusca}}'>
+                            <input name="idficha" type="hidden" value='{{ficha.idficha}}'>
+                            <input name="idcatalogo" type="hidden" value='{{ficha.idcatalogo}}'>
+                            <input name="rows" type="hidden" value="{{rows}}" }>
+                            <input name="i" type="hidden" value={{ficha.i}}>
+                            </br>
+                            <input type="submit" class="btn btn-default" value="Ir a" />
+                        </form>
+                        <!-- end barra de progreso tipo dial de solr-->
+                        <!-- begin Barra de navegacion en resultados solr inicio final -->
+                        <nav id="cipacPagination">
+                            <ul class="pagination ">
+                                {% for posicion in pagination %} {% set start %} {{posicion["puntero"]}} {% endset %} {% set newcadbusca %} {{posicion["cadbusca"]}} {% endset %}
+
+                                <!-- <h1>{{newcadbusca}}</h1> -->
+                                {% if "Actual" in posicion["etiqueta"] %}
+
+                                <li class="active"> <a href='../cgi-bin/search.py?cadbusca={{newcadbusca}}&start={{start}}&idficha={{ficha.idficha}}&idcatalogo={{ficha.idCatalogo}}&rows={{rows}}&i={{i}}&j={{j}}&sort={{sort}}&buscar=True'>{{posicion["etiqueta"]}}</a>
+                                </li>
+                                {% else %}
+                                <li><a href='../cgi-bin/search.py?cadbusca={{newcadbusca}}&start={{start}}&idficha={{idficha}}&idcatalogo={{ficha.idCatalogo}}&rows={{rows}}&i={{i}}&j={{j}}&sort={{sort}}&buscar=True'>{{posicion["etiqueta"]}}</a>
+                                </li>
+
+                                {% endif %} {% endfor %}
+                                <input name="idficha" type="hidden" value="{{idcatalogo}}0010001">
+                                <input name="start" type="hidden" value="0">
+                                <input name="i" type="hidden" value={{1}}>
+                                <input name="j" type="hidden" value={{1}}>
+                                <input name="sort" type="hidden" value="">
+                                <input name="buscar" type="hidden" value=True>
+
+                            </ul>
+                        </nav>
+
+                        <!-- end Barra de navegacion en resultados solr inicio final -->
+
+                        <!-- begin Lista de registros resultados solr  -->
+                        <section id="cipacRecordList" class="container">
+                            <ul class="list-group">
+                                {% for registro in indice: %}
+
+                                <li id="cipacRecord" class="list-group-item">
+
+                                    <p> {{registro[0]}} / {{registro[1]}}</p>
+                                    {%if registro[4]["body"] %}
+                                    <p id="cipacUnderlining">{{registro[4]["body"][0] | safe}}</p>
+
+                                    {% endif %}
+                                    <p> {{registro[2]}} </p>
+                                    <p> <a class="link" href="../cgi-bin/item.py?idficha={{registro[3]}}">Ver Imagen
+											ficha({{registro[3]}}) </a> </p>
+
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </section>
+                        <!-- end Lista de registros resultados solr  -->
+
+                        <!-- begin Barra de navegacion inferior en resultados solr inicio final -->
+                        <section id="cipacPagination">
+                            <ul class="pagination ">
+
+                                {% for posicion in pagination %} {% set start %} {{posicion["puntero"]}} {% endset %} {% set newcadbusca %} {{posicion["cadbusca"]}} {% endset %} {% set valor %} int(int(start)*100/numFound) {% endset %}
+                                <!-- <h1>{{newcadbusca}}</h1> -->
+                                {% if "Actual" in posicion["etiqueta"] %}
+
+                                <li class="active"> <a href='../cgi-bin/search.py?cadbusca={{newcadbusca}}&start={{start}}&idficha={{ficha.idficha}}&idcatalogo={{ficha.idCatalogo}}&rows={{rows}}&i={{i}}&j={{j}}&sort={{sort}}&buscar=True'>{{posicion["etiqueta"]}}</a>
+                                </li>
+                                {% else %}
+                                <li><a href='../cgi-bin/search.py?cadbusca={{newcadbusca}}&start={{start}}&idficha={{idficha}}&idcatalogo={{ficha.idCatalogo}}&rows={{rows}}&i={{i}}&j={{j}}&sort={{sort}}&buscar=True'>{{posicion["etiqueta"]}}</a>
+                                </li>
+
+                                {% endif %} {% endfor %}
+
+                            </ul>
+                        </section>
+                        <!-- end Barra de navegacion inferior en resultados solr inicio final -->
+
+                        {% else %}
+                        <div id="cipacResultStats">
+                            <p> Resultados de b&uacutesqueda </p>
+                            <p>Su b&uacutesqueda por <em> {{cadbusca}}</em> no arroj&oacute resultados en el Cat&aacutelogo de {{ficha.config['idCatalogos'][ficha.idCatalogo]}}. {{ficha.titleInstitution}} </p>
+
+                            <p>Sugerencias:<br> Asegurarse que todas las palabras se escribieron correctamente.<br> Pruebe con otras palabras clave.<br> Pruebe con palabras clave m&aacutes generales.<br>
+                            </p>
+                        </div>
+                        {% endif %}
+                    </section>
+                    <!-- end section id = "cipacSearchResults" -->
+                    {% endblock cipacSearch%}
+                </section>
+                <!-- end section id = "cipacSearch" -->
+                {% else %}
+                <section id="cipacBrowse" class="container">
+                    {% block cipacBrowse %}
+                    <!-- Navegacion dentro de un catalogo viendo las fichas -->
+                    <section id="cipacNavegaCatalogos">
+                        {% block cipacNavegaCatalogos %}
+                        <!-- Menu de las gavetas de un catalogo -->
+                        <section id="cipacMenuGavetas" onmouseover='this.style.backgroundColor = "#F0F0F0"' onmouseout='this.style.backgroundColor = "white"'>
+                            {% if ficha.g.C.qGavetas > 1 %} {{ficha.Barracatalogocgi3}} {% endif %}
+
+                        </section>
+                        <section id="cipacCuerpoFicha" class="container">
+                            <!-- <div id = "cipacJsonldFicha" value = {{ficha.registroJson}}></div> -->
+                            <div id="cipacCuerpoFicha" class="row container">
+                                <!-- Columna izquierda -->
+                                <!-- <div id = "cipacColumnaIzquierda" class= "col-xs-12 col-sm-5 col-md-7" align = "center" > -->
+
+                                <!-- <input id = "checkboxOn" type = "checkbox" class = "btn btn-default" checked = "checked" onchange = "apagarPrender()"/> -->
+                                <div id="cipacColumnaIzquierda" class="col-xs-12 col-sm-12 col-md-7" align="center">
+                                    <section id="cipacCajaImagenficha">
+
+                                        <section id="cipacImagenFicha" onmouseover='this.style.backgroundColor = "#F0F0F0"' onmouseout='this.style.backgroundColor = "white"'>
+                                            <a href="../{{ficha.idCatalogo}}/{{ficha.idCatalogo}}{{ficha.gaveta}}/images/{{ficha.idficha}}.jpg">
+
+                                                <img name="cipacImagenThisFicha" class="img-rounded" src="../{{ficha.idCatalogo}}/{{ficha.idCatalogo}}{{ficha.gaveta}}/images/{{ficha.idficha}}.jpg" width="{{ficha.anchoficha}}" height="{{ficha.altoficha}}" alt='{{ficha.Descripcion()}}' />
+                                            </a>
+
+                                        </section>
+                                        <section id="cipacBarrasFichas">
+                                            <div id="cipacBarraInicioFinal">{{ficha.Biniciocgi()}}</div>
+                                            <div id="cipacBarraBinaria">{{ficha.Bbinariacgi()}}</div>
+                                            <div id="cipacBarraPrecisa">{{ficha.Bdialcgi()}}</div>
+                                            <!-- Barra de progreso de las fichas Tipo dial -->
+                                            <div id="cipacBarraDial">
+                                                <form class="form-horizontal" role="form" action="/cgi-bin/item.py?" method="GET">
+                                                    <input id="range" type="range" name="j" min="1" max="{{ficha.q}}" value="{{ficha.j}}" placeholder="{{ficha.j}}" />
+                                                    <input name="idcatalogo" type="hidden" value={{idcatalogo}}>
+                                                    <input name="i" type="hidden" value={{ficha.i}}>
+                                                    <input type="submit" class="btn btn-default" value="Ir" />
+                                                </form>
+                                            </div>
+
+                                            <!-- Fin de la Barra de progreso de las fichas -->
+                                        </section>
+                                    </section>
+
+                                </div>
+                                <!-- Columna derecha Anotaciones y edicion -->
+                                <!-- <div id = "cipacColumnaDerecha" class= "col-xs-5 col-sm-7 col-md-5" align = "center"> -->
+
+                                <!-- 												<input type = "button" class = "btn btn-default" value = "On/Off"  onclick = "apagarPrender()"/> -->
+                                <div id="cipacColumnaDerecha" class="col-xs-12 col-sm-12 col-md-5">
+
+                                    <article id="cipacShowTextoFicha">
+                                        <header id="cipacShowTextoFichaHeader">
+                                            <strong>{{ficha.titleInstitution}}</br> Cat&aacutelogo de
+												{{ficha.config['idCatalogos'][ficha.idCatalogo]}}.
+												Fichas:{{ficha.g.C.qFichas}}</strong>
+                                        </header>
+                                        <form class="form-horizontal" role="form" action="/cgi-bin/item.py?" method="GET">
+                                            <!-- <a class = "btn btn-default" href={{urlFichaAleatoria}}> Aleatoria</a> -->
+                                            <!-- <a class = "btn btn-default" href={{urlFichaAleatoria}}> Aleatoria</a> -->
+                                            <a class="btn btn-default" href="../cgi-bin/item.py?idficha={{ficha.NombreRandom(True)}}">
+												Aleatoria</a> Gaveta:
+
+                                            <input name="i" type="text" size="3" maxlength="3" value={{ficha.i}}> Ficha:
+                                            <input name="j" type="text" size="4" maxlength="4" value={{ficha.j}}>
+                                            <input name="idficha" type="hidden" value={{ficha.idficha}}>
+                                            <input type="submit" class="btn btn-default" value="Ir a" />
+                                            </br>
+                                            Buscar en:
+                                            <button value="Google" onclick="searchGoogle(this)" type="submit">Google</button>
+                                            <button value="Worldcat" onclick="searchWorldcat(this)" type="submit">Worldcat</button>
+                                            <button value="Dpla" onclick="searchDpla(this)" type="submit">DPLA</button></br>
+                                        </form>
+                                    </article>
+
+                                    {% if editar %}
+                                    <article id="cipacEdit">
+                                        <header>Editar ficha</header>
+                                        <form class="form-horizontal" role="form" action="/cgi-bin/item.py?" method="GET">
+                                            Texto:<textarea class="form-control" rows="5" name="textoficha" align="left">{{ficha.ocr | safe}}</textarea>
+                                            <input name="idficha" type="hidden" value='{{ficha.idficha}}'>
+                                            <input name="idcatalogo" type="hidden" value='{{ficha.idCatalogo}}'>
+                                            <input name="editar" type="hidden" value=False>
+                                            <input name="salvar" type="hidden" value="True">
+                                            <input type="submit" class="btn btn-default" align="left" value="Salvar" />
+                                            <a class="btn btn-default" href='../cgi-bin/item.py?idficha={{ficha.idficha}}' align="left">Descartar</a>
+
+                                        </form>
+                                    </article>
+
+                                    {% else %}
+
+                                    <article id="cipacShow">
+                                        <header>Texto de la ficha {{ficha.i}} / {{ficha.j}} </header>
+                                        <p id="cipacTextoFicha" value='{{ficha.ocr |safe}}' align="left">{{ficha.ocr |safe}}
+                                        </p>
+                                        <form class="form-horizontal" role="form" action="/cgi-bin/item.py?" method="GET">
+                                            <input name="idficha" type="hidden" value={{ficha.idficha}}>
+                                            <input name="editar" type="hidden" value=True>
+                                            <input type="submit" class="btn btn-default" value="Editar" />
+
+                                        </form>
+                                    </article>
+
+                                    {%endif %}
+                                </div>
+                            </div>
+                        </section>
+                        {% endblock cipacNavegaCatalogos %}
+                    </section>
+                    <!-- navegaCatalogos -->
+                    {% endblock cipacBrowse%}
+                </section>
+                <!-- end section id = "cipacBrowse" -->
+                {% endif %} {% else %}
+                <!-- if carousel -->
+                {% block cipacCarousel %}
+                <!-- carousel -->
+                <div id="cipacCarousel" class="carousel slide" data-ride="carousel" data-pause="hover">
+                    <!-- Indicators -->
+                    <ol class="carousel-indicators">
+                        <li data-target="#cipacCarousel" data-slide-to="0" class="active"></li>
+                        <li data-target="#cipacCarousel" data-slide-to="1"></li>
+                        <li data-target="#cipacCarousel" data-slide-to="2"></li>
+                    </ol>
+
+                    <!-- Wrapper for slides -->
+                    <div class="carousel-inner">
+                        <div class="item active">
+                            <img src="/img/bnjmsculyfof.jpg" width="572" height="480" alt="Usted puede acceder al contenido de las fichas de los cat&aacutelogos de importantes bibliotecas cubanas sin necesidad de trasladarse a esas instituciones. Se ofrece una versi&oacuten digital de los mismos con facilidades para la b&uacutesqueda y la navegaci&oacuten. ">
+                            <div class="carousel-caption">
+                                <h1 class="cipacCarouselPancarta">Cat&aacutelogos digitalizados.</h1>
+                                <p>Usted puede acceder al contenido de las fichas de los cat&aacutelogos de importantes bibliotecas cubanas sin necesidad de trasladarse a esas instituciones. Se ofrece una versi&oacuten digital de los mismos con facilidades
+                                    para la b&uacutesqueda y la navegaci&oacuten.
+                                    <p><a class="btn btn-lg btn-primary" href="/cgi-bin/item.py?idcatalogo={{ficha.idCatalogo}}" role="button">Acceder</a></p>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <img src="/img/bcuhcgrlyfof.jpg" alt="Si el cat&aacutelogo dispone del texto completo de las fichas, usted puede buscar por nombres de personas, lugares, t&iacutetulos de documentos, fechas y otras palabras clave que aparezcan en el texto de las fichas.">
+                            <div class="carousel-caption">
+                                <h1 class="cipacCarouselPancarta">Buscar en el texto de las fichas.</h1>
+                                <p>Si el cat&aacutelogo dispone del texto completo de las fichas, usted puede buscar por nombres de personas, lugares, t&iacutetulos de documentos, fechas y otras palabras clave que aparezcan en el texto de las fichas.</p>
+                                <p><a class="btn btn-lg btn-primary" href="/cgi-bin/search.py?idcatalogo={{ficha.idCatalogo}}" role="button">Buscar</a></p>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <img src="/img/bcuhcgr_2.jpg" alt="Usted puede revisar los c&aacutetalogos de la Biblioteca seleccionada siguiendo el orden original en que aparecen las fichas en cada una de sus gavetas. Esta variante es muy &uacutetil si no se dispone a&uacuten del texto digitalizado de las fichas.">
+                            <div class="carousel-caption">
+                                <h1 class="cipacCarouselPancarta">Explorar los cat&aacutelogos.</h1>
+                                <p>Usted puede revisar los c&aacutetalogos de la Biblioteca seleccionada siguiendo el orden original en que aparecen las fichas en cada una de sus gavetas. Esta variante es muy &uacutetil si no se dispone a&uacuten del texto
+                                    digitalizado de las fichas.</p>
+                                <p><a class="btn btn-lg btn-primary" href="/cgi-bin/item.py?idcatalogo={{ficha.idCatalogo}}" role="button">Explorar</a></p>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- Controls -->
+                    <a class="left carousel-control" href="#cipacCarousel" role="button" data-slide="prev">
+                        <!-- <span class= "glyphicon glyphicon-chevron-left"></span> -->
+                        <span class="icon-prev"></span>
+
+                    </a>
+                    <a class="right carousel-control" href="#cipacCarousel" role="button" data-slide="next">
+                        <!-- <span class= "glyphicon glyphicon-chevron-right"></span> -->
+                        <span class="icon-next"></span>
+                    </a>
+
+                    {% endblock cipacCarousel %}
+                </div>
+                <!-- Carousel -->
+                {% endif %}
+                <!-- endif if carousel -->
+                {% endblock cipacContent %}
+            </section>
+            <!-- end section id = "cipacContent" -->
+        </div>
+        <!-- begin footer -->
+        <section id="footer" class="container">
+            <footer role="contentinfo">
+                {% block cipacFooter %}
+                <address class="container">
+					<p>Para documentos catalogados a partir de 1995 consultar el <a
+							href="http://catalogo.bnjm.cu/">Cat&aacutelogo en l&iacutenea</a>. </p>
+					<a href="http://portal.{{ficha.siglaI}}.cu">
+						{{ficha.titleInstitution}}
+					</a>
+				</address>
+                <font size="1">
+                    &Uacuteltima Actualizaci&oacuten: <i>
+						<script>document.write(document.lastModified);</script>
+					</i>
+                </font>
+                {% endblock cipacFooter%}
+            </footer>
+        </section>
+        <!-- end footer -->
+        {% endblock cipacPage %}
+    </div>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="../js/jquery-2.0.3.min.js"></script>
+    <script src="../js/bootstrap.js"></script>
+    <script>
+        $('.carousel').carousel({
+            data - interval = 5000;
+        })
+    </script>
+    <script type="text/javascript" src="../js/cipac.js">
+    </script>
+</body>
+
+</html>
