@@ -159,38 +159,14 @@ class Catalog():
         return True
 
     @property
-    def menu(self):
+    def drawers_menu(self):
         # devuelve una lista que contiene las cadenas HTML
         # con el menu de gavetas usando bootstrap para su presentacion
-
-        menuGaveta = [ ]
-
-        cadenanumeros = ""
-        cadena = ""
-
+        drawers_menu = {}
         for i , cadenai , cadenaf , q in self.data:
-            enlaceacgi = "../cgi-bin/item.py?idficha=" + \
-                         self.id + str ( i ).zfill ( 3 ) + "0001"
-            if cadenai == cadenaf:
-                menuGaveta.append ( '<li><a href="' + enlaceacgi +
-                                    '" alt="' + str ( i ).zfill ( 3 ) + "0001" + '"> ' + cadenai + ' </a></li>' )
-            else:
-                menuGaveta.append ( '<li><a href="' + enlaceacgi + '" alt="' +
-                                    str ( i ).zfill ( 3 ) + "0001" + '"> ' + cadenai + "-" + cadenaf + ' </a></li>' )
-        abc = [ 'A' , 'B' , 'C' , 'D' , 'E' , 'F' , 'G' , 'H' , 'I' , 'J' , 'K' , 'L' , 'M' ,
-                'N' , 'Ñ' , 'O' , 'P' , 'Q' , 'R' , 'S' , 'T' , 'U' , 'V' , 'W' , 'X' , 'Y' , 'Z' ]
+            drawers_menu[cadenai+"-"+cadenaf] = self.id + str ( i ).zfill ( 3 ) + "0001"
 
-        for letra in abc:
-            cadena += ' <div class="btn-group btn-group-sm" ><button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"> ' + \
-                      letra + '</button> <ul class="dropdown-menu" role="menu">'
-            for linea in menuGaveta:
-                if "> " + letra in linea or "-" + letra in linea:
-                    cadena += linea
-
-            cadena += '</ul></div>'
-        cadena += '</div>'
-
-        return menuGaveta
+        return drawers_menu
 
     def any_card_name(self,i= int, j= int):
         card_name = ""
@@ -468,5 +444,20 @@ class Card ( Drawer ):
             self.error = str(error)
             return False
 
+    @property
+    def url_coordinates(self):
+        # generates a dictionary with urls of the coordinates of the card
+        url_coordinates ={}
+        for coordinate in self.coordinates.keys():
+            url_coordinates[coordinate]= self.drawer.url.geturl() + str(self.coordinates.get(coordinate)).zfill(4)
+        return url_coordinates
+
+    @property
+    def coordinate_ids(self):
+        # generates a dictionary with card names of the coordinates
+        coordinate_ids ={}
+        for coordinate in self.coordinates.keys():
+            coordinate_ids[coordinate]= self.drawer.id + str(self.coordinates.get(coordinate)).zfill(4)
+        return coordinate_ids
 
 

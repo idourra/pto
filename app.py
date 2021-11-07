@@ -16,9 +16,6 @@ def provide_catalog():
     catalog = cipac.Catalog("bnjmsculyfof","http://bnjm.sld.cu/bnjmsculyfof","/home/urra/projects/pto/tests/data/bdc/bnjm/bnjmsculyfof")
     return {'catalog':catalog}
 
-@app.context_processor
-def alphabet():
-    return {'abcd' : ["A","B","C","D","E","F","G","H"]}
 
 @app.route("/")
 def home():
@@ -30,18 +27,16 @@ def about():
     #return "{} Catalog has {} cards in {} drawers".format(catalog.id,catalog.q_cards,catalog.q_drawers)
     return render_template("about.html",catalog=catalog)
 
-# @app.route("/cards/")
-# def card():
-#     return render_template("card.html",catalog=catalog)
 
 @app.route("/cards/<string:card_id>/")
 def show_card(card_id):
-    card = cipac.Card(card_id,catalog.url.geturl(),"")
+    if len(card_id) == 12:
+        card_id = card_id + "0010001"
+    elif len(card_id) == 15:
+        card_id = card_id + "0001"
+    card = cipac.Card(card_id,"http://bnjm.sld.cu/"+ card_id[:12],"")
     return render_template("card.html",card = card)
 
-@app.route("/p/<string:slug>/")
-def show_post(slug):
-    return "Mostrando el post {}".format(slug)
 
 # vistas
 
