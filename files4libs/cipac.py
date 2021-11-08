@@ -87,13 +87,19 @@ class Catalog():
         self.local_path = Path().cwd() if catalog_local_path is None else Path(catalog_local_path)
 
         #number of drawers
-        self.q_drawers = len(self.data)
+        if self.data:
+            self.q_drawers = len(self.data)
+        else:
+            self.q_drawers = 0
 
         # number of cards
-        count = 0
-        for row in self.data:
-            count += int(row[3])
-        self.q_cards = count
+        if self.data:
+            count = 0
+            for row in self.data:
+                count += int(row[3])
+            self.q_cards = count
+        else:
+            self.q_cards = 0
 
     @property
     def data(self):
@@ -165,8 +171,23 @@ class Catalog():
         drawers_menu = {}
         for i , cadenai , cadenaf , q in self.data:
             drawers_menu[cadenai+"-"+cadenaf] = self.id + str ( i ).zfill ( 3 ) + "0001"
-
         return drawers_menu
+    
+    @property
+    def alphabet_menu(self):
+        abc = [ 'A' , 'B' , 'C' , 'D' , 'E' , 'F' , 'G' , 'H' , 'I' , 'J' , 'K' , 'L' , 'M' ,
+                'N' , 'Ñ' , 'O' , 'P' , 'Q' , 'R' , 'S' , 'T' , 'U' , 'V' , 'W' , 'X' , 'Y' , 'Z' ]
+        alphabet__menu = {}
+        for letter in abc:
+            alphabet__menu[letter] = []
+            drawer_list = list(self.drawers_menu.keys())
+            for keywords in drawer_list:
+                if  letter.upper() in keywords[0].upper():
+                    if alphabet__menu[letter]:
+                        alphabet__menu[letter].append(({keywords:self.drawers_menu[keywords]}))
+                    else:
+                        alphabet__menu[letter]=[{keywords:self.drawers_menu[keywords]}]
+        return alphabet__menu
 
     def any_card_name(self,i= int, j= int):
         card_name = ""
@@ -248,13 +269,13 @@ class Drawer(Catalog):
                 "first":1,
                 "last_drawer":self.catalog.q_drawers,
                 "last_card": self.q_cards,
-                "quarter" : int(self.q_cards / 4),
-                "eighth" : int(self.q_cards / 8),
-                "three_eighths" : int(self.q_cards*3 / 8),
-                "half" : int(self.q_cards / 2),
-                "five_eighths" : int(self.q_cards*5 / 8),
-                "three_quarters" : int(self.q_cards*3 / 4),
-                "seven_eighths" : int(self.q_cards*7 / 8)}
+                "quarter" : int(self.q_cards // 4),
+                "eighth" : int(self.q_cards // 8),
+                "three_eighths" : int(self.q_cards*3 // 8),
+                "half" : int(self.q_cards // 2),
+                "five_eighths" : int(self.q_cards*5 // 8),
+                "three_quarters" : int(self.q_cards*3 // 4),
+                "seven_eighths" : int(self.q_cards*7 // 8)}
 
 class Card ( Drawer ):
     def __init__(self ,card_id : str, catalog_url : str, catalog_local_path :str):

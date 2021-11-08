@@ -34,7 +34,7 @@ def show_card(card_id):
         card_id = card_id + "0010001"
     elif len(card_id) == 15:
         card_id = card_id + "0001"
-    card = cipac.Card(card_id,"http://bnjm.sld.cu/"+ card_id[:12],"")
+    card = cipac.Card(card_id,"http://localhost/"+ card_id[:12],"")
     return render_template("card.html",card = card)
 
 
