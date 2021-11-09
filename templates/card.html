@@ -1,13 +1,17 @@
-{% extends "base_template.html" %} {% block title %} {{catalog.id}} {% endblock %} {% block content %} {% block cipacDrawersMenu %}
-<ul class="nav justify-content-center">
-    {% for drawer_id in card.catalog.drawers_menu.keys() %}
-    <li class="nav-item">
-        <a class="nav-link active" aria-current="page" href='
-            ../{{card.catalog.drawers_menu[drawer_id]}} '>{{drawer_id}}</a>
+{% extends "base_template.html" %} {% block title %} {{catalog.id}} {% endblock %} {% block content %}{% block cipacDrawersMenu %}
+<ul class="nav nav-tabs">
+    {% for letter in card.catalog.alphabet_menu.keys() %}
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">{{letter}}</a>
+        <ul class="dropdown-menu">
+            {% for drawer in card.catalog.alphabet_menu[letter] %}
+            <li><a class="dropdown-item" href="../{{drawer[1]}}">{{drawer[0]}}</a></li>
+            {% endfor %}
+        </ul>
     </li>
-    {% endfor%}
+    {% endfor %}
 </ul>
-{% endblock %} {% block cipacCardArea %}
+{% endblock %}{% block cipacCardArea %}
 <div id="cipac_card_area" class="container">
     <div class="row">
         <div id="cipac_card_left_column" class="col">
@@ -19,7 +23,7 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href='
-                                ../{{card.catalog.get_random_card()}}'>Random</a>
+                                ../{{card.catalog.get_random_card_name()}}'>Random</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link disabled">Disabled</a>
@@ -44,7 +48,6 @@
                                 ../{{card.coordinate_ids["next" ]}} '>Next</a>
                         </li>
                     </ul>
-
                     <ul class="nav justify-content-center">
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page" href=' ../{{card.coordinate_ids["first" ]}} '>First</a>
@@ -71,8 +74,7 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" aria-current="page" href='
-                                ../{{card.coordinate_ids["three_quarters" ]}}
-                                '>6/8</a>
+                                ../{{card.coordinate_ids["three_quarters" ]}} '>6/8</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" aria-current="page" href='
@@ -95,7 +97,7 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href='
-                                ../{{card.catalog.get_random_card()}}'>Random</a>
+                                ../{{card.catalog.get_random_card_name()}}'>Random</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link disabled">Disabled</a>

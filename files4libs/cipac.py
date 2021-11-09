@@ -11,122 +11,168 @@ import validators
 import json
 import random
 
-
-def get_url(scheme: str, netloc : str, path: str):
-    """
-    From RFC 1808, Section 2.1, every URL should follow a specific format:
-    https://www.rfc-editor.org/rfc/rfc1808.html#section-2.1
-    <scheme>://<netloc>/<path>;<params>?<query>#<fragment>
-
-    scheme: The protocol name, usually http/https
-    netloc: Contains the network location - which includes the domain itself (and subdomain if present), the port number, along with an optional credentials in form of username:password. Together it may take form of username:password@domain.com:80.
-    path: Contains information on how the specified resource needs to be accessed.
-    params: Element which adds fine tuning to path. (optional)
-    query: Another element adding fine grained access to the path in consideration. (optional)
-    fragment: Contains bits of information of the resource being accessed within the path. (optional)
-
-    Lets take a very simple example to understand the above clearly:
-
-    http://bnjm.sld.cu/bnjmsculyfof/bnjmsculyfof001/bnjmsculyfof0010001
-
-    In the above example:
-
-    https is the scheme (first element of a URL)
-    bnjm.sld.cu is the netloc (sits between the scheme and path)
-    /bnjmsculyfof/bnjmsculyfof001/bnjmsculyfof0010001
-    is the path (between the netloc and params)
-    meow is the param (sits between path and query)
-    breed=siberian is the query (between the fragment and params)
-    pawsize is the fragment (last element of a URL)
-
-    """
-
-    return urlunparse([scheme, netloc, path,"","",""])
-
 class Catalog():
     """
-    catalog tiene 11 digitos, y es una variable str
-            Funciona como un codigo de 11 digitos:
-                nombre de la institucion: 4 digitos.g bnjm
-                sala en que esta la coleccion: 3 digitos  scu
-                tipo de coleccion: 3 digitos e.g. lyf
-                tipo de catalogo: 2 digitos e.g. of
-                iriCatalogo = 'bnjmsculyfof'
-
-    :param id_catalog: a string of 12 characters identifying the catalog eg. 'bnjmsculyfof'
-    :type id_catalog: str
-
-    :param catalog_url: the  URL where the catalog data is located
-                        eg.file:///home/urra/catalogos/bnjmsculyfof for a local catalog
-                        htp://bnjm.sld.cu/bnjmsculyfof for a catalog in Internet
+    A Card Images Public Access Catalog (cipac) following a standarized file system structure
+    for data and for naming the folders and files.
+    The patter for the global name is iiiissscccgg
+    iiii - 4 digits for institutions identification
+    sss  - 3 digits for department identification
+    ccc  - 3 digits for collection identification
+    gg   - 2 digits for catalog type identification
+  
+    :param catalog_url: the  URL of a cipac catalog without final / eg. http://bnjm.sld.cu/bnjmsculyfof
     :type catalog_path: str
     """
-    def __init__(self , id_catalog : str, catalog_url : str, catalog_local_path = None):
+    def __init__(self, catalog_url: str):
+        
+        # check that the catalog_url is correct
+        assert validators.url(catalog_url) == True, "not valid url"
 
-        assert len(id_catalog) == 12, "id_catalog shoud have 12 characters eg. 'bnjmsculyfof'"
+        # a tuple of url components eg.:
+        # (scheme='http', netloc='bnjm.sld.cu', path='/bnjmsculyfof', params='', query='', fragment='')
+        self._url = urlparse(catalog_url)
 
-        self.local = False
+        assert  not self.url.path == "", "you must enter a valid cipac catalog name. It must be 12 characters long eg. bnjmsculyfof"
 
-        #id of the catalog following the cipac name convention
-        self.id = id_catalog
+        # id of the catalog following the cipac name convention
+        self.id = self.url.path[1:]
+        assert len(self.id) == 12, "Not a valid cipac catalog name. It must be for example bnjmsculyfof"
+
+        # cipac data is a json file that is associated with a cipac catalog and is a json file
+        # with the same name of the catalog and extension .json eg bnjmsculyfof.json
+        self._data = self.data
+
+        # the quantity of drawers of the catalog
+        self._q_drawers = self.q_drawers
 
         self.error = "None"
 
+    @property
+    def url(self):
+        return self._url
+    
+    @url.setter
+    def url(self, new_url):
+        if validators.url(new_url) == True:
+            self._url = urlparse(new_url)
+            self._id = self.url.path[1:]
 
-        catalog_url = catalog_url.strip()
-        if not catalog_url[:-1] ==  "/":
-            self.catalog_url = catalog_url + "/"
         else:
-            self.catalog_url = catalog_url
-        self.url = urlparse(catalog_url)
+            print ("Please enter a valid url")
 
-        #url where the json file with catalog structure is available
-        self.data_url = urljoin(self.catalog_url, self.id + ".json")
-
-        # catalog local_path where a copy of the cipac will be created
-        self.local_path = Path().cwd() if catalog_local_path is None else Path(catalog_local_path)
-
-        #number of drawers
-        if self.data:
-            self.q_drawers = len(self.data)
-        else:
-            self.q_drawers = 0
-
-        # number of cards
-        if self.data:
-            count = 0
-            for row in self.data:
-                count += int(row[3])
-            self.q_cards = count
-        else:
-            self.q_cards = 0
+    # @property
+    # def id(self):
+    #     return self._id
 
     @property
     def data(self):
         try:
-            r = requests.get(self.data_url)
-            return(r.json())
+            r = requests.get(urljoin(self.url.geturl() + "/",self.id+".json"))
+            if r.ok:
+                return(r.json())
+            else:
+                return None
         except(Exception) as error:
             print(error)
+            return None
 
-    def get_card(self, i, j):
-        id_card = self.id + str(i).zfill(3) + str(j).zfill(4)
-        card = Card(id_card,self.url.geturl(),self.local_path)
+    @property
+    def q_cards(self):
+        # number of cards
+        count = 0
+        for row in self.data:
+            count += int(row[3])
+        return count
+
+    @property
+    def q_drawers(self):
+        #number of drawers
+        return len(self.data)
+   
+    def card_getter(self, i:int, j:int):
+        #get a Card object with its attributes and methods
+        assert i > 0 and i<= self.q_drawers, f"drawer number must be among 1 and {self.q_drawers} values"
+        assert j >0 and j <= int(self.data[i-1][3]), f"card must be among 1 and {self.data[i-1][3]} values"
+        card = Card(self.url.geturl(), i, j)
         return card
 
-    def get_random_card(self):
+    def get_random_card_name(self):
         # genera un nombre de ficha aleatoria dentro del conjunto de fichas del catalogo
         # a nivel de cada gaveta o de el catalogo completo
         # si la variable total es verdadera se mueve en la totalidad
         # si es falsa solo dentro de una gaveta
-        #TODO
+        # TODO
 
-        i = random.randint ( 1 , self.q_drawers )
+        i = random.randint(1, self.q_drawers)
         q = int(self.data[i-1][3])
-        j = random.randint ( 1 , q )
-        return (self.id + str ( i ).zfill ( 3 ) + str ( j ).zfill ( 4 ))
+        j = random.randint(1, q)
+        return (self.id + str(i).zfill(3) + str(j).zfill(4))
 
-    def create_structure(self, dest_path = None, q_drawers = None)-> bool:
+    @property
+    def drawers_menu(self):
+        # devuelve una lista que contiene las cadenas HTML
+        # con el menu de gavetas usando bootstrap para su presentacion
+        drawers_menu = {}
+        for i, cadenai, cadenaf, q in self.data:
+            drawers_menu[cadenai+"-"+cadenaf] = self.id + \
+                str(i).zfill(3) + "0001"
+        return drawers_menu
+
+    @property
+    def alphabet_menu(self):
+        abc = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+               'N', 'Ñ', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+        alphabet_menu = {}
+        for letter in abc:
+            alphabet_menu[letter] = []
+            drawer_list = list(self.drawers_menu.keys())
+            for keywords in drawer_list:
+                if letter.upper() in keywords[0].upper():
+                    drawer_tags = list(
+                        {keywords: self.drawers_menu[keywords]}.keys())[0]
+                    drawer_id = list(
+                        {keywords: self.drawers_menu[keywords]}.values())[0]
+                    alphabet_menu[letter].append([drawer_tags, drawer_id])
+        return alphabet_menu
+
+
+    def any_card_name(self, i=int, j=int):
+
+        #get  drawer name
+        card_name = self.any_drawer_name(i)
+        i = int(card_name[12:])
+      
+        # add card name
+        if j > 0 and j <= int(self.data[i-1][3]):
+            card_name += str(j).zfill(4)
+        elif j<=0:
+            card_name += str(1).zfill(4)
+        else:
+            card_name += str(int(self.data[i-1][3])).zfill(4)
+        
+        return card_name
+
+    def any_drawer_name(self, i=int):
+        #conform drawer name
+        drawer_name = ""
+        if i > 0 and i <= self.q_drawers:
+            # valid drawer_number
+            drawer_name += self.id + str(i).zfill(3)
+        elif i == 0:
+            # 0 invalid drawer number uses  drawer number 1
+            drawer_name += self.id + str(1).zfill(3)
+            i = 1
+        else:
+            # not valid drawer number, uses the max drawer number
+            drawer_name += self.id + str(len(self.data)).zfill(3)
+            i = len(self.data)
+        return drawer_name
+
+    def any_card_url(self, i, j):
+        return self.url.geturl() + "/" + self.any_drawer_name(i) + "/" + self.any_card_name(i,j)
+
+    def create_structure(self, dest_path=None, q_drawers=None) -> bool:
         """
         creates a cipac folder structure whith q_drawers folders
 
@@ -142,7 +188,7 @@ class Catalog():
         dest_path = Path().cwd() if self.local_path is None else Path(self.local_path)
         q_drawers = 0 if q_drawers is None else q_drawers
 
-        #create a folder for the catalog
+        # create a folder for the catalog
         self.create_catalog_folder(dest_path)
 
         # create a folder for every drawer
@@ -164,198 +210,114 @@ class Catalog():
                 return False
         return True
 
-    @property
-    def drawers_menu(self):
-        # devuelve una lista que contiene las cadenas HTML
-        # con el menu de gavetas usando bootstrap para su presentacion
-        drawers_menu = {}
-        for i , cadenai , cadenaf , q in self.data:
-            drawers_menu[cadenai+"-"+cadenaf] = self.id + str ( i ).zfill ( 3 ) + "0001"
-        return drawers_menu
-    
-    @property
-    def alphabet_menu(self):
-        abc = [ 'A' , 'B' , 'C' , 'D' , 'E' , 'F' , 'G' , 'H' , 'I' , 'J' , 'K' , 'L' , 'M' ,
-                'N' , 'Ñ' , 'O' , 'P' , 'Q' , 'R' , 'S' , 'T' , 'U' , 'V' , 'W' , 'X' , 'Y' , 'Z' ]
-        alphabet__menu = {}
-        for letter in abc:
-            alphabet__menu[letter] = []
-            drawer_list = list(self.drawers_menu.keys())
-            for keywords in drawer_list:
-                if  letter.upper() in keywords[0].upper():
-                    if alphabet__menu[letter]:
-                        alphabet__menu[letter].append(({keywords:self.drawers_menu[keywords]}))
-                    else:
-                        alphabet__menu[letter]=[{keywords:self.drawers_menu[keywords]}]
-        return alphabet__menu
-
-    def any_card_name(self,i= int, j= int):
-        card_name = ""
-        if i >0 and i<= self.q_drawers:
-            card_name += self.id + str(i).zfill(3)
-            if  j > 0 and j <= int(self.data[i-1][3]):
-                card_name += str(j).zfill(4)
-            else:
-                card_name += str(1).zfill(4)
-        else:
-            card_name += self.id + str(1).zfill(3)
-            if  j > 0 and j <= int(self.data[1][3]):
-                card_name += str(j).zfill(4)
-            else:
-                card_name += str(1).zfill(4)
-        return card_name
-
-    def any_drawer_name(self,i= int):
-        if i >0 and i<= self.q_drawers:
-            return self.id + str(i).zfill(3)
-        else:
-            return self.id + str(1).zfill(3)
-
-    def any_card_url(self,i,j):
-        return self.url.geturl() + self.any_drawer_name()
-class Drawer(Catalog):
-    #TODO tratar de manera integral el camino a partir del scheme
-    def __init__(self , id_drawer : str, catalog_url : str):
+class Drawer():
+    def __init__(self, catalog_url: str, drawer_number=1):
         """
         """
-        # check that id_drawer is correct
-        assert len(id_drawer) == 15, "id_drawer shoud have 15 characters eg. 'bnjmsculyfof001'"
+        # check that the catalog_url is correct
+        assert validators.url(catalog_url) == True, "not valid url"
 
-        self.id =id_drawer
+        # instantiate the Catalog object
+        self.catalog = Catalog(catalog_url)
 
-        self.catalog = Catalog(self.id[:12], catalog_url)
+        assert drawer_number>0 and drawer_number<= self.catalog.q_drawers, f"drawer number must be among 1 and {self.catalog.q_drawers}"
+        # drawer id
+        self.id = self.catalog.id + str(drawer_number).zfill(3)
 
-        self.error = "None"
+        self.position = drawer_number
 
+        self.url = urlparse(self.catalog.url.geturl() + "/" + self.id)
 
-        #drawer position inside the catalog cabinet
-        self.position = int(id_drawer[12:15])
-
-        #drawer url
-        self.url = urlparse(urljoin(self.catalog.url.geturl(), "/" + self.id[:12] + "/" + self.id + "/"))
-
-        #drawer local_path
-        self.local_path = Path(self.catalog.local_path) / self.id
-
-        #q_cards in drawer
         self.q_cards = int(self.catalog.data[self.position-1][3])
-
-    #TODO check the use of url versus local files
-
-    def card_id(self, card_position):
-        assert card_position <= self.q_cards
-        return self.id + str(card_position).zfill(4)
-
-    def get_card(self, card_position: int):
-        assert card_position <= self.q_cards
-        card_id = self.id + str(card_position).zfill(4)
-        return Card(card_id,".")
 
     @property
     def coordinates(self):
         #previous, next, quarter,eighth, three_eighths, half, five_eighths, three_quarters, seven_eighths
         actual = self.position
         if actual < self.q_cards:
-            next = self.position +1
+            next = self.position + 1
         else:
             next = self.position
-        if actual>1:
-            previous = actual -1
+        if actual > 1:
+            previous = actual - 1
         else:
             previous = actual
-        return  {"actual":actual,
-                "previous":previous,
-                "next" : next,
-                "first":1,
-                "last_drawer":self.catalog.q_drawers,
+        return {"actual": actual,
+                "previous": previous,
+                "next": next,
+                "first": 1,
+                "last_drawer": self.catalog.q_drawers,
                 "last_card": self.q_cards,
-                "quarter" : int(self.q_cards // 4),
-                "eighth" : int(self.q_cards // 8),
-                "three_eighths" : int(self.q_cards*3 // 8),
-                "half" : int(self.q_cards // 2),
-                "five_eighths" : int(self.q_cards*5 // 8),
-                "three_quarters" : int(self.q_cards*3 // 4),
-                "seven_eighths" : int(self.q_cards*7 // 8)}
+                "quarter": int(self.q_cards // 4),
+                "eighth": int(self.q_cards // 8),
+                "three_eighths": int(self.q_cards*3 // 8),
+                "half": int(self.q_cards // 2),
+                "five_eighths": int(self.q_cards*5 // 8),
+                "three_quarters": int(self.q_cards*3 // 4),
+                "seven_eighths": int(self.q_cards*7 // 8)}
 
-class Card ( Drawer ):
-    def __init__(self ,card_id : str, catalog_url : str, catalog_local_path :str):
+
+class Card ():
+    def __init__(self, catalog_url: str, drawer_number=1, card_number=1):
         """
         A cipac digital respresentarion of a library card
 
-        :param card_id: the cipac compatible card identification eg. "bnjmsculyfof0010001"
-        :type card_id: str
 
         :param catalog_url: the url of the file system catalog data  eg. "http://bnjm.sld.cu/bnjmsculyfof"
         :type catalog_url: str
 
+        :param drawer_number: the number of the drawer where the card is located
+        :type drawer_number: int
+
+        :param card_number: the position of the card in the drawer
+        :type card_number: int
 
         """
-
-        # check that card_id is correct
-        assert len(card_id) == 19, "card_id must have 19 characters eg. 'bnjmsculyfof0010001' and follow th cipac convention for naming"
-
-
         # check that the catalog_url is correct
         assert validators.url(catalog_url) == True, "not valid url"
 
+        # instantiate the catalog object
+        self.catalog = Catalog(catalog_url)
 
-        #card attributes
+        # instantiate the drawer
+        self.drawer = Drawer(self.catalog.url.geturl(), drawer_number)
 
-        # card id
-        self.id =card_id
+        # check that it is a valid card number
+        assert card_number <= self.drawer.q_cards and card_number >= 0, "the card with position  {drawer_number} is out of range, the drawer has {self.drawer.q_cards} cards"
+
+        # generate de card id
+        self.id = self.drawer.id + str(card_number).zfill(4)
+
+        # card position inside the drawer
+        self.position = card_number
+
+        # other card attributes
 
         self.error = "None"
 
-        #card image_name
-        self.image_name = "/" + self.id[:12] + "/" + self.id[:15] + "/images/" + self.id + ".jpg"
+        # card image_name
+        self.image_name = self.id + ".jpg"
 
-        #card_image_ocr
-        self.ocr_image_name =  "/" + self.id[:12] + "/" + self.id[:15] + "/" + self.id + ".txt"
+        # card_image_ocr
+        self.ocr_image_name = self.id + ".txt"
 
-
-        # card catalog data and methods
-        self.catalog = Catalog(card_id[:12],catalog_url, catalog_local_path)
-
-        #drawer catalog data and methods
-        self.drawer = Drawer(card_id[:15],catalog_url)
-
-        # catalog local_path where a copy of the cipac will be created
-        self.local_path = Path().cwd() / self.catalog.id / self.drawer.id  if catalog_local_path is None else Path(catalog_local_path) / self.drawer.id
-
-        #card position inside the drawer
-        self.position = int(card_id[15:19])
-        assert self.position <= self.drawer.q_cards and self.position>=0, f"the card {self.id} with position  {self.id[-4:]} is out of range, the drawer has {self.drawer.q_cards} cards"
-
-        #TODO valorar ajustar la posicion de la ficha al maximo de fichas en la gaveta cuando esta es superior al rango
-        #a los efectos de la localizacion de las fichas
-
-
-
-        # if j > int ( self.g.qFichas ):
-        #     self.j = int ( self.g.qFichas )
-        # else:
-        #     self.j = j
-        # card url
-        self.url = self.drawer.url
-        self.url_image = urlparse(urljoin(self.drawer.url.geturl(), "images/" + self.id + ".jpg"))
-        self.url_ocr = urlparse(urljoin(self.drawer.url.geturl(),  self.id + ".txt"))
-        # url of the card in the cipac webapp
-        self.url_api = urlparse(urlunparse([self.url.scheme,self.url.netloc,'/cgi-bin/item.py',"","idficha="+self.id,""]))
-
+        self.url = urlparse(self.drawer.url.geturl() + "/" + self.id)
+        self.url_image = urlparse(self.drawer.url.geturl() + "/images/" + self.image_name)
+        self.url_ocr = urlparse(self.drawer.url.geturl() + "/" + self.ocr_image_name)
+        self.url_api = urlparse("../cards/" + self.id)
         # card json data
-        self.json_data = json.dumps({self.id:{"id":self.id,
-                                    "image_url":self.url_image.geturl(),
-                                    "ocr_text_url":self.url_ocr.geturl(),
-                                    "drawer":self.drawer.position,
-                                    "position":self.position},
-                                    "ocr_text": self.ocr_text})
-
+        # self.json_data = json.dumps({self.id: {"id": self.id,
+        #                             "image_url": self.url_image.geturl(),
+        #                                        "ocr_text_url": self.url_ocr.geturl(),
+        #                                        "drawer": self.drawer.position,
+        #                                        "position": self.position},
+        #                              "ocr_text": self.ocr_text})
 
     @property
     def ocr_text(self):
         if self.url.scheme == "file":
             try:
-                with open(self.ocr_image_name,"r", encoding="utf-8") as f:
+                with open(self.ocr_image_name, "r", encoding="utf-8") as f:
                     ocr_text = f.read()
                     return ocr_text
             except(Exception) as error:
@@ -371,27 +333,18 @@ class Card ( Drawer ):
                 self.error = str(error)
 
                 return ""
+
     @property
     def image_content(self):
-        if self.url.scheme == "file":
-            try:
-                with open(self.image_name,"r", encoding="utf-8") as f:
-                    image_content = f.read()
-                    return image_content
-            except(Exception) as error:
-                print(error)
-                return str(error)
-        else:
-            try:
-                r = self.get_remote(".jpg")
-                return r.content
-            except(Exception) as error:
-                print(error)
-                self.error = str(error)
+        try:
+            r = self.get_remote(".jpg")
+            return r.content
+        except(Exception) as error:
+            print(error)
+            self.error = str(error)
+            return
 
-                return ""
-
-    def get_remote(self,suffix:str):
+    def get_remote(self, suffix: str):
         """
         get remote data for the card from a valid cipac catalog
 
@@ -413,17 +366,20 @@ class Card ( Drawer ):
 
             return
 
-    def open_web(self):
-        webbrowser.open (self.url_api.geturl() )
+    def open_web(self,netloc:str):
+        url = urljoin(netloc,self.url_api.path)
+        webbrowser.open(url)
 
-    def json(self):
-        {self.id:{"id":self.id,
-        "image_url":self.url_image,
-        "ocr_text_url":self.url_ocr,
-        "drawer":self.drawer.position,
-        "position":self.position},
-        "ocr_text": self.ocr,
-        "image_content":self.image_content}
+    # TODO
+    # @property
+    # def json(self):
+    #     {self.id:{"id":self.id,
+    #     "image_url":self.url_image,
+    #     "ocr_text_url":self.url_ocr,
+    #     "drawer":self.drawer.position,
+    #     "position":self.position},
+    #     "ocr_text": self.ocr_text,
+    #     "image_content":self.image_content}
 
     @property
     def coordinates(self):
@@ -431,33 +387,34 @@ class Card ( Drawer ):
         if self.position == 1:
             previous = 1
         else:
-            previous = self.position -1
+            previous = self.position - 1
         if self.position >= self.drawer.q_cards:
             next = self.drawer.q_cards
         else:
-            next = self.position +1
+            next = self.position + 1
         card_coordinates = self.drawer.coordinates
-        card_coordinates["actual"] =self.position
+        card_coordinates["actual"] = self.position
         card_coordinates["previous"] = previous
         card_coordinates["next"] = next
-        return  card_coordinates
+        return card_coordinates
 
-    def save_image(self) ->bool:
+    def save_image(self) -> bool:
         imagename = self.id + ".jpg"
-        filename = Path(self.local_path) /"images" / imagename
+        filename = Path(self.local_path) / "images" / imagename
         try:
-            with open(filename,"wb") as fout:
+            with open(filename, "wb") as fout:
                 fout.write(self.image_content)
                 return True
         except(Exception) as error:
             print(error)
             self.error = str(error)
             return False
-    def save_ocr(self) ->bool:
+
+    def save_ocr(self) -> bool:
         imagename = self.id + ".txt"
         filename = Path(self.local_path) / imagename
         try:
-            with open(filename,"w",encoding="utf-8") as fout:
+            with open(filename, "w", encoding="utf-8") as fout:
                 fout.write(self.ocr_text)
                 return True
         except(Exception) as error:
@@ -468,17 +425,17 @@ class Card ( Drawer ):
     @property
     def url_coordinates(self):
         # generates a dictionary with urls of the coordinates of the card
-        url_coordinates ={}
+        url_coordinates = {}
         for coordinate in self.coordinates.keys():
-            url_coordinates[coordinate]= self.drawer.url.geturl() + str(self.coordinates.get(coordinate)).zfill(4)
+            url_coordinates[coordinate] = self.drawer.url.geturl(
+            ) + self.drawer.id + str(self.coordinates.get(coordinate)).zfill(4)
         return url_coordinates
 
     @property
     def coordinate_ids(self):
         # generates a dictionary with card names of the coordinates
-        coordinate_ids ={}
+        coordinate_ids = {}
         for coordinate in self.coordinates.keys():
-            coordinate_ids[coordinate]= self.drawer.id + str(self.coordinates.get(coordinate)).zfill(4)
+            coordinate_ids[coordinate] = self.drawer.id + \
+                str(self.coordinates.get(coordinate)).zfill(4)
         return coordinate_ids
-
-
