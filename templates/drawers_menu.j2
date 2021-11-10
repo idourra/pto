@@ -1,0 +1,14 @@
+{% block cipacDrawersMenu %}
+<ul class="nav nav-tabs">
+    {% for letter in card.catalog.alphabet_menu.keys() %}
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">{{letter}}</a>
+        <ul class="dropdown-menu">
+            {% for drawer in card.catalog.alphabet_menu[letter] %}
+            <li><a class="dropdown-item" href="../{{drawer[1]}}">{{drawer[0]}}</a></li>
+            {% endfor %}
+        </ul>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

@@ -61,9 +61,6 @@ class Catalog():
         else:
             print ("Please enter a valid url")
 
-    # @property
-    # def id(self):
-    #     return self._id
 
     @property
     def data(self):

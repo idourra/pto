@@ -1,0 +1,121 @@
+{% extends "base_template.j2" %} 
+{% block title %} 
+{{card.ocr_text[:35]}} 
+{% endblock %} 
+{% block content %} 
+    {% block cipacCardArea %}
+        <div id="cipac_card_area" class="container">
+            <div class="row">
+                {% block leftbody %}
+                    <div id="cipac_card_left_column" class="col">
+                        <div id="cipac_card" class="card">
+                            <div class="card-header">
+                                <ul class="nav nav-tabs card-header-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" aria-current="true" href="#">Active</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href='
+                                            ../{{card.catalog.get_random_card_name()}}'>Random</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link disabled">Disabled</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <img src={{card.url_image.geturl()}} class="rounded
+                                    float-start" alt={{card.ocr_text}}}>
+                            </div>
+                            <div class="card-footer">
+                                <!-- Card dial -->
+                                <form  class= "form-horizontal"  role= "form" method="GET" action="../">
+                                    <input type="range" class="form-range" id="customRange1" name= "j" min = "1" max ="{{card.drawer.q_cards}}" >
+                                    <input type="submit" class = class="btn btn-primary" value= "Go to card"/>	
+                                </form>
+                                <!-- end of Card dial -->
+                                <ul class="nav justify-content-center">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" aria-current="page" href=' ../{{card.coordinate_ids["previous"
+                                            ]}}'>Previous</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#">{{card.coordinates["actual"]}}/{{card.coordinates["last_card"]}}</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href='
+                                            ../{{card.coordinate_ids["next" ]}} '>Next</a>
+                                    </li>
+                                </ul>
+                                <ul class="nav justify-content-center">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" aria-current="page" href=' ../{{card.coordinate_ids["first" ]}} '>First</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" aria-current="page" href='
+                                            ../{{card.coordinate_ids["eighth" ]}} '>1/8</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" aria-current="page" href='
+                                            ../{{card.coordinate_ids["quarter" ]}} '>2/8</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" aria-current="page" href='
+                                            ../{{card.coordinate_ids["three_eighths" ]}} '>3/8</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" aria-current="page" href='
+                                            ../{{card.coordinate_ids["half" ]}} '>Half</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" aria-current="page" href='
+                                            ../{{card.coordinate_ids["five_eighths" ]}} '>5/8</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" aria-current="page" href='
+                                            ../{{card.coordinate_ids["three_quarters" ]}} '>6/8</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" aria-current="page" href='
+                                            ../{{card.coordinate_ids["seven_eighths" ]}} '>7/8</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" aria-current="page" href='
+                                            ../{{card.coordinate_ids["last_card" ]}} '>Last</a>
+                                    </li>
+                                </ul>
+
+                            </div>
+                        </div>
+                    </div>
+                {% endblock %}
+                {% block rightbody %}
+                    <div id="cipac_right_column" class="col">
+                        <div class="card">
+                            <div class="card-header">
+                                <ul class="nav nav-tabs card-header-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" aria-current="true" href="#">Active</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href='
+                                            ../{{card.catalog.get_random_card_name()}}'>Random</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link disabled">Disabled</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">Special title treatment</h5>
+                                <p class="card-text"> {{card.ocr_text}}
+                                </p>
+                                <a href="#" class="btn btn-primary">Go somewhere</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endblock %}
+            </div>
+        </div>
+    {% endblock %}
+{% endblock %}
